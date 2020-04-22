@@ -79,7 +79,6 @@
   },
   "devDependencies": {
     "@types/node": "latest",
-    "typescript": "^3.8.3",
     "vscode": "latest"
   },
   "__metadata": {
