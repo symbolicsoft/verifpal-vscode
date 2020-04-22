@@ -1,0 +1,90 @@
+{
+  "name": "verifpal",
+  "displayName": "Verifpal",
+  "version": "0.0.12",
+  "publisher": "symbolicsoft",
+  "description": "Verifpal language support.",
+  "author": {
+    "name": "Nadim Kobeissi",
+    "email": "nadim@symbolic.software"
+  },
+  "license": "GPL-3.0",
+  "engines": {
+    "vscode": "^1.44.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://source.symbolic.software/verifpal/verifpal.git"
+  },
+  "activationEvents": [
+    "onLanguage:verifpal"
+  ],
+  "main": "./out/src/extension",
+  "contributes": {
+    "languages": [
+      {
+        "id": "verifpal",
+        "aliases": [
+          "Verifpal",
+          "verifpal"
+        ],
+        "extensions": [
+          ".vp"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "verifpal",
+        "scopeName": "source.verifpal",
+        "path": "./syntax/verifpal.tmLanguage"
+      }
+    ],
+    "commands": [
+      {
+        "command": "verifpal.coverage",
+        "title": "Verifpal: Toggle Verifpal coverage"
+      },
+      {
+        "command": "verifpal.path",
+        "title": "Verifpal: Show path to Verifpal"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Verifpal Configuration",
+      "properties": {
+        "verifpal.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable or disable Verifpal integration"
+        },
+        "verifpal.path": {
+          "type": "string",
+          "default": "",
+          "description": "Path to Verifpal binary"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "tsc -p ./",
+    "compile": "tsc -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install"
+  },
+  "devDependencies": {
+    "@types/node": "^13.13.2",
+    "typescript": "^2.0.3",
+    "vscode": "^1.0.0"
+  },
+  "__metadata": {
+    "id": "6c419ee6-2f9f-45ff-84c5-6f63de449fd1",
+    "publisherDisplayName": "Symbolic Software",
+    "publisherId": "4a0b804a-5a62-4d83-ba2a-4f17c3afa6ed"
+  }
+}
