@@ -30,7 +30,6 @@ const buildCodeSnippet = (item) => {
 			}
 		}
 	}
-
 	return codeSnippet;
 }
 

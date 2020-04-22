@@ -8,15 +8,12 @@ import SignatureProvider from './SignatureProvider';
 import DefinitionProvider from './DefinitionProvider';
 import { setupDiagnostics } from './Diagnostics';
 import { configGetEnabled, configDeterminePath } from './config';
+
 'use strict';
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
+
 const supportedLanguages = [
-	"javascriptreact",
-	"javascript"
+	"verifpal"
 ];
 
 let paramHintsEnable = false;
@@ -65,6 +62,5 @@ export function activate(context: vscode.ExtensionContext) {
 	setupDiagnostics(context.subscriptions);
 }
 
-// this method is called when your extension is deactivated
 export function deactivate() {
 }

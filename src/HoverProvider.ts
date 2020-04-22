@@ -17,7 +17,7 @@ export default class HoverProvider {
 				// const beautifiedData = beautify(typeAtPos.type, { indent_size: 4 });
 				return new vscode.Hover([
 					'Verifpal',
-					{ language: 'javascriptreact', value: `${word}` }
+					{ language: 'verifpal', value: `${word}` }
 				]);
 			}).catch((e) => {
 
