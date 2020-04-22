@@ -11,7 +11,7 @@ const VERIFPAL_NOT_FOUND = `[Verifpal] Specify Verifpal's location in your user 
 export function configGetPath(): string {
 	const config = workspace.getConfiguration('verifpal');
 	if (config) {
-		return config.get('path').toString();
+		return config.get('path') || "";
 	}
 	return '';
 }

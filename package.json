@@ -78,13 +78,16 @@
     "postinstall": "node ./node_modules/vscode/bin/install"
   },
   "devDependencies": {
-    "@types/node": "^13.13.2",
-    "typescript": "^2.0.3",
-    "vscode": "^1.0.0"
+    "@types/node": "latest",
+    "typescript": "^3.8.3",
+    "vscode": "latest"
   },
   "__metadata": {
     "id": "6c419ee6-2f9f-45ff-84c5-6f63de449fd1",
     "publisherDisplayName": "Symbolic Software",
     "publisherId": "4a0b804a-5a62-4d83-ba2a-4f17c3afa6ed"
+  },
+  "dependencies": {
+    "cross-spawn": "latest"
   }
 }

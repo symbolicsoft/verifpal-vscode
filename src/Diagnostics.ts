@@ -15,7 +15,9 @@ export function setupDiagnostics(disposables: Array<vscode.Disposable>) {
 
 	// Update diagnostics: when active text editor changes
 	disposables.push(vscode.window.onDidChangeActiveTextEditor(editor => {
-		updateDiagnostics(editor && editor.document);
+		if (editor && editor.document) {
+			updateDiagnostics(editor && editor.document);
+		}
 	}));
 
 	// Update diagnostics when document is edited
