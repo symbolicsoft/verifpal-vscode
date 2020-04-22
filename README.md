@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: CC-BY-SA-4.0
 -->
 
-# Verifpal Language Support
+# Verifpal IDE for Visual Studio Code
 
 Verifpal language support for Visual Studio Code.
 
