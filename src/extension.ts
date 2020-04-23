@@ -10,6 +10,8 @@ import {
 
 'use strict';
 import * as vscode from 'vscode';
+import VerifpalLib from './VerifpalLib';
+import { format } from 'url';
 
 export function activate(context: vscode.ExtensionContext) {
 	if (!configGetEnabled()) {
@@ -17,21 +19,32 @@ export function activate(context: vscode.ExtensionContext) {
 	}
 
 	context.subscriptions.push(
-		vscode.languages.registerHoverProvider([
-				{
-					language: 'verifpal',
-					scheme: 'file',
-					pattern: '**/*vp*'
-				}
-		], new HoverProvider())
+		vscode.languages.registerHoverProvider([{
+			language: 'verifpal',
+			scheme: 'file',
+			pattern: '**/*vp*'
+		}], new HoverProvider())
+	);
+
+	context.subscriptions.push(
+		vscode.commands.registerTextEditorCommand('verifpal.format', (editor, edit) => {
+			let fileContents = editor.document.getText();
+			let fullRange = new vscode.Range(0, 0, editor.document.lineCount, 0);
+			return VerifpalLib.getPrettyPrint(fileContents).then((result: string) => {
+				vscode.window.activeTextEditor!.edit((editBuilder) => {
+					console.log(result)
+					editBuilder.replace(fullRange, result);
+				});
+			});
+		})
 	);
 
 	const coverage = new CoverageProvider(context.subscriptions);
 	const refreshCoverage = () => {
 		coverage.toggleDecorations();
-		coverage.refreshCoverage();
+		//coverage.refreshCoverage();
 	};
-	
+
 	const showVerifpalPath = () => {
 		vscode.window.showInformationMessage(`Verifpal path set to '${configDeterminePath()}'`);
 	}
@@ -40,4 +53,4 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand('verifpal.path', showVerifpalPath);
 }
 
-export function deactivate() {}
+export function deactivate() { }

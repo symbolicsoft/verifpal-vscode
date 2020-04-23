@@ -53,6 +53,10 @@
       {
         "command": "verifpal.path",
         "title": "Verifpal: Show Path to Verifpal"
+      },
+      {
+        "command": "verifpal.format",
+        "title": "Verifpal: Format Model"
       }
     ],
     "configuration": {

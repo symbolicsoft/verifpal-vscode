@@ -7,4 +7,7 @@ dependencies:
 clean:
 	@$(RM) -rf out
 
-.PHONY: dependencies clean .vscode node_modules out src syntax
+publish:
+	@vsce publish
+
+.PHONY: dependencies clean publish .vscode node_modules out src syntax

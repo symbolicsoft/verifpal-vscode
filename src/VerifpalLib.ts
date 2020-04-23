@@ -42,6 +42,7 @@ type PrincipalState struct {
 */
 
 export default class VerifpalLib {
+
 	static execVerifpal(fileContents, args) {
 		return new Promise((resolve, reject) => {
 			let verifpalOutput = "";
@@ -61,7 +62,9 @@ export default class VerifpalLib {
 					resolve(result);
 				}
 			});
-			verifpalProc.stdin.write(fileContents);
+			verifpalProc.stdin.write(
+				`${fileContents}${String.fromCharCode(0x04)}`
+			);
 			verifpalProc.stdin.end();
 		});
 	}
@@ -248,6 +251,10 @@ export default class VerifpalLib {
 
 	static getPrettyValue(fileContents: string) {
 		return VerifpalLib.execVerifpal(fileContents, ['internal-json', 'prettyValue']);
+	}
+
+	static getPrettyPrint(fileContents: string) {
+		return VerifpalLib.execVerifpal(fileContents, ['internal-json', 'prettyPrint']);
 	}
 
 	static getCoverage(fileContents: string, fileName: string): any {}
