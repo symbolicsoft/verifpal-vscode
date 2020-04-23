@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: GPL-3.0-only */
 
 import HoverProvider from './HoverProvider';
-import CoverageProvider from './CoverageProvider';
+import CoverageProvider from './AnalysisProvider';
 import {
 	configGetEnabled,
 	configDeterminePath
@@ -40,18 +40,18 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	});
 
-	const coverage = new CoverageProvider(context.subscriptions);
-	const refreshCoverage = () => {
-		coverage.toggleDecorations();
-		//coverage.refreshCoverage();
-	};
-
 	const showVerifpalPath = () => {
 		vscode.window.showInformationMessage(`Verifpal path set to '${configDeterminePath()}'`);
 	}
 
-	vscode.commands.registerCommand('verifpal.coverage', refreshCoverage);
+	vscode.workspace.onWillSaveTextDocument(event => {
+		const openEditor = vscode.window.visibleTextEditors.filter(
+			editor => editor.document.uri === event.document.uri
+		)[0]
+	})
+
+	// vscode.commands.registerCommand('verifpal.coverage', refreshCoverage);
 	vscode.commands.registerCommand('verifpal.path', showVerifpalPath);
 }
 
-export function deactivate() {}
+export function deactivate() { }
