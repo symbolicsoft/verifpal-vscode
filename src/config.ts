@@ -26,7 +26,7 @@ export function configDeterminePath() {
 	if (fs.existsSync(localInstall)) {
 		pathToVerifpal = localInstall;
 	} else {
-		pathToVerifpal = 'verifpal';
+		pathToVerifpal = '/Users/nadim/Documents/git/verifpal/build/macos/verifpal';
 	}
 	return pathToVerifpal;
 }

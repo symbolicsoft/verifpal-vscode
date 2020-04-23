@@ -8,16 +8,44 @@ import { configDeterminePath } from './config';
 import * as path from 'path';
 import * as fs from 'fs';
 
+
+/*
+type KnowledgeMap struct {
+	Principals []string
+	Constants  []Constant
+	Assigned   []Value
+	Creator    []string
+	KnownBy    [][]map[string]string
+	Phase      [][]int
+	MaxPhase   int
+}
+
+type PrincipalState struct {
+	Name          string
+	Constants     []Constant
+	Assigned      []Value
+	Guard         []bool
+	Known         []bool
+	Wire          [][]string
+	KnownBy       [][]map[string]string
+	Creator       []string
+	Sender        []string
+	Rewritten     []bool
+	BeforeRewrite []Value
+	Mutated       []bool
+	MutatableTo   [][]string
+	BeforeMutate  []Value
+	Phase         [][]int
+	Lock          int
+}
+*/
+
 export default class VerifpalLib {
-	static execVerifpal(fileContents, filename, args) {
+	static execVerifpal(fileContents, args) {
 		return new Promise((resolve, reject) => {
-			if (!fs.existsSync(filename)) {
-				resolve(undefined);
-			}
-			const cwd = path.dirname(filename);
 			let verifpalOutput = "";
 			let verifpalOutputError = "";
-			const verifpalProc = spawn(configDeterminePath(), args, { cwd: cwd });
+			const verifpalProc = spawn(configDeterminePath(), args);
 			verifpalProc.stdout.on('data', (data) => {
 				verifpalOutput += data.toString();
 			});
@@ -29,10 +57,6 @@ export default class VerifpalLib {
 					reject(verifpalOutputError);
 				} else {
 					let result = verifpalOutput;
-					if (verifpalOutput && verifpalOutput.length) {
-						// result = JSON.parse(verifpalOutput);
-						result = verifpalOutput;
-					}
 					resolve(result);
 				}
 			});
@@ -41,38 +65,35 @@ export default class VerifpalLib {
 		});
 	}
 
+	static getKnowledgeMapIndexFromConstant(constant: string, knowledgeMap) {
+		for (let i = 0; i < knowledgeMap.Constants.length; i++) {
+			if (knowledgeMap.Constants[i].Name === constant) {
+				return i
+			}
+		}
+		return -1
+	}
+
+	static getKnowledgeMap(fileContents: string) {
+		return VerifpalLib.execVerifpal(fileContents, ['internal-json', 'knowledgeMap']);
+	}
+
+	static getPrettyValue(fileContents: string) {
+		return VerifpalLib.execVerifpal(fileContents, ['internal-json', 'prettyValue']);
+	}
+
 	static getTypeAtPos(fileContents: string, fileName, pos: vscode.Position) {
-		return VerifpalLib.execVerifpal(
-			fileContents,
-			fileName,
-			['type-at-pos', '--json', '--pretty', '--path', fileName, pos.line + 1, pos.character + 1]);
 	}
 
 	static getDiagnostics(fileContents: string, fileName: string): any {
-		return VerifpalLib.execVerifpal(
-			fileContents,
-			fileName,
-			['status', '--json']);
 	}
 
 	static getAutocomplete(fileContents: string, fileName: string, pos: vscode.Position): any {
-		return VerifpalLib.execVerifpal(
-			fileContents,
-			fileName,
-			['autocomplete', '--json', fileName, pos.line + 1, pos.character + 1]);
 	}
 
 	static getDefinition(fileContents: string, fileName: string, pos: vscode.Position): any {
-		return VerifpalLib.execVerifpal(
-			fileContents,
-			fileName,
-			['get-def', '--json', fileName, pos.line + 1, pos.character + 1]);
 	}
 
 	static getCoverage(fileContents: string, fileName: string): any {
-		return VerifpalLib.execVerifpal(
-			fileContents,
-			fileName,
-			['coverage', '--json', fileName]);
 	}
 }

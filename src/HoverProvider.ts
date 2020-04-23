@@ -3,6 +3,7 @@
 
 import * as vscode from 'vscode';
 import VerifpalLib from './VerifpalLib';
+import { rejects } from 'assert';
 export default class HoverProvider {
 	provideHover(
 		document: vscode.TextDocument,
@@ -11,26 +12,59 @@ export default class HoverProvider {
 		const wordPosition = document.getWordRangeAtPosition(position);
 		if (!wordPosition) return new Promise((resolve) => resolve());
 		const word = document.getText(wordPosition);
-		return new Promise((resolve, reject) => {
-			if (primitivesInfo.hasOwnProperty(word.toUpperCase())) {
-				const p = primitivesInfo[word];
-				const hoverText = new vscode.MarkdownString();
-				hoverText.appendCodeblock(p.eg);
-				hoverText.appendMarkdown(p.help);
-				resolve(new vscode.Hover([
-					'Verifpal', {
-						language: 'verifpal',
-						value: hoverText.value
-					}
-				]))
+		const fileContents = document.getText();
+		return VerifpalLib.getKnowledgeMap(fileContents).then((result: string) => {
+			const knowledgeMap = JSON.parse(result.toString())
+			if (primitiveInfo.hasOwnProperty(word.toUpperCase())) {
+				const p = primitiveInfo[word];
+				let hoverText = `${p.eg}\n// ${p.help}`;
+				return new Promise((resolve, reject) => {
+					resolve(new vscode.Hover([
+						'Verifpal', {
+							language: 'verifpal',
+							value: hoverText
+						}
+					]))
+				})
 			} else {
-				reject()
+				let info = constantInfo(word, knowledgeMap);
+				if (!info.Valid) {
+					return
+				}
+				return VerifpalLib.getPrettyValue(info.Assigned).then((result: string) => {
+					let hoverText = `// Created by ${info.Creator}\n${result}`;
+					return new Promise((resolve, reject) => {
+						resolve(new vscode.Hover([
+							'Verifpal', {
+								language: 'verifpal',
+								value: hoverText
+							}
+						]))
+					})
+				})
 			}
-		})
+		});	
 	}
 }
 
-export const primitivesInfo = {
+export const constantInfo = (constant: string, knowledgeMap) => {
+	let info = {
+		Creator: "",
+		Assigned: "",
+		KnownBy: "",
+		Valid: false,
+	}
+	let i = VerifpalLib.getKnowledgeMapIndexFromConstant(constant, knowledgeMap)
+	if (i >= 0) {
+		info.Creator = knowledgeMap.Creator[i];
+		info.Assigned = JSON.stringify(knowledgeMap.Assigned[i]) + "\n";
+		info.KnownBy = JSON.stringify(knowledgeMap.KnownBy[i]) + "\n";
+		info.Valid = true;
+	}
+	return info;
+}
+
+export const primitiveInfo = {
 	"ASSERT": {
 		arity: 2,
 		output: 1,
