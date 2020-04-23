@@ -16,8 +16,10 @@ export default class HoverProvider {
 		const word = document.getText(wordPosition);
 		const fileContents = document.getText();
 		return VerifpalLib.getKnowledgeMap(fileContents).then((result: string) => {
+			console.log(word)
 			const knowledgeMap = JSON.parse(result.toString())
 			let primitiveInfo = VerifpalLib.primitiveInfo(word);
+			let queryInfo = VerifpalLib.queryInfo(word);
 			if (primitiveInfo.length > 0) {
 				return new Promise((resolve, reject) => {
 					resolve(new vscode.Hover([
@@ -26,7 +28,16 @@ export default class HoverProvider {
 							value: primitiveInfo
 						}
 					]))
-				})
+				});
+			} else if (queryInfo.length > 0) {
+				return new Promise((resolve, reject) => {
+					resolve(new vscode.Hover([
+						'Verifpal: Query Documentation', {
+							language: 'verifpal',
+							value: queryInfo
+						}
+					]))
+				});
 			} else {
 				let info = VerifpalLib.constantInfo(word, knowledgeMap);
 				if (!info.Valid) {
@@ -42,7 +53,7 @@ export default class HoverProvider {
 							}
 						]))
 					})
-				})
+				});
 			}
 		});
 	}

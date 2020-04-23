@@ -48,11 +48,11 @@
     "commands": [
       {
         "command": "verifpal.coverage",
-        "title": "Verifpal: Toggle Verifpal coverage"
+        "title": "Verifpal: Run Attacker Analysis"
       },
       {
         "command": "verifpal.path",
-        "title": "Verifpal: Show path to Verifpal"
+        "title": "Verifpal: Show Path to Verifpal"
       }
     ],
     "configuration": {

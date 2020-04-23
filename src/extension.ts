@@ -3,7 +3,6 @@
 
 import HoverProvider from './HoverProvider';
 import CoverageProvider from './CoverageProvider';
-import SignatureProvider from './SignatureProvider';
 import {
 	configGetEnabled,
 	configDeterminePath
@@ -16,18 +15,6 @@ export function activate(context: vscode.ExtensionContext) {
 	if (!configGetEnabled()) {
 		return false;
 	}
-
-	context.subscriptions.push(
-		vscode.languages.registerSignatureHelpProvider(
-			[
-				{
-					language: 'verifpal',
-					scheme: 'file',
-					pattern: '**/*vp*'
-				}
-			],
-			new SignatureProvider(), '(', '.')
-	);
 
 	context.subscriptions.push(
 		vscode.languages.registerHoverProvider([
@@ -44,9 +31,11 @@ export function activate(context: vscode.ExtensionContext) {
 		coverage.toggleDecorations();
 		coverage.refreshCoverage();
 	};
+	
 	const showVerifpalPath = () => {
-		vscode.window.showInformationMessage(`Verifpal path set to: ${configGetEnabled()}`);
+		vscode.window.showInformationMessage(`Verifpal path set to '${configDeterminePath()}'`);
 	}
+
 	vscode.commands.registerCommand('verifpal.coverage', refreshCoverage);
 	vscode.commands.registerCommand('verifpal.path', showVerifpalPath);
 }

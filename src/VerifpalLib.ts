@@ -216,6 +216,32 @@ export default class VerifpalLib {
 		return '';
 	};
 
+	static queryInfo = (queryName: string) => {
+		let queries = {
+			"confidentiality": {
+				eg: "confidentiality? a",
+				help: "Checks whether a given value can be obtained by the attacker.",
+			},
+			"authentication": {
+				eg: "authentication? Alice -> Bob: m",
+				help: "Checks whether Bob will rely on some value m in an important protocol operation (such as signature verification or authenticated decryption) if and only if he received that value from Alice. If Bob is successful in using m for signature verification or a similar operation without it having been necessarily sent by Alice, then authentication is violated for e1, and the attacker was able to impersonate Alice in communicating that value.",
+			},
+			"freshnness": {
+				eg: "freshness? a",
+				help: "Freshness queries are useful for detecting replay attacks, where an attacker could manipulate one message to make it seem valid in two different contexts. In passive attacker mode, a freshness query will check whether a value is “fresh” between sessions (i.e. if it has at least one composing element that is generated, non-static). In active attacker mode, it will check whether a value can be rendered “non-fresh” (i.e. static between sessions) and subsequently successfully used between sessions.",
+			},
+			"unlinkability": {
+				eg: "unlinkability? a, b, c",
+				help: "Checks whether all given values satisfy freshness. If they do, checks whether the attacker can determine them as being the output of the same primitive or as otherwise having a common source. If any of these checks fail, the query fails.",
+			}
+		}
+		if (queries.hasOwnProperty(queryName.toLowerCase())) {
+			let q = queries[queryName.toLowerCase()];
+			return `${q.eg}\n// ${q.help}`;
+		}
+		return '';
+	}
+
 	static getKnowledgeMap(fileContents: string) {
 		return VerifpalLib.execVerifpal(fileContents, ['internal-json', 'knowledgeMap']);
 	}
@@ -223,14 +249,6 @@ export default class VerifpalLib {
 	static getPrettyValue(fileContents: string) {
 		return VerifpalLib.execVerifpal(fileContents, ['internal-json', 'prettyValue']);
 	}
-
-	static getTypeAtPos(fileContents: string, fileName, pos: vscode.Position) {}
-
-	static getDiagnostics(fileContents: string, fileName: string): any {}
-
-	static getAutocomplete(fileContents: string, fileName: string, pos: vscode.Position): any {}
-
-	static getDefinition(fileContents: string, fileName: string, pos: vscode.Position): any {}
 
 	static getCoverage(fileContents: string, fileName: string): any {}
 }
