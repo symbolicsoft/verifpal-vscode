@@ -16,7 +16,6 @@ export default class HoverProvider {
 		const word = document.getText(wordPosition);
 		const fileContents = document.getText();
 		return VerifpalLib.getKnowledgeMap(fileContents).then((result: string) => {
-			console.log(word)
 			const knowledgeMap = JSON.parse(result.toString())
 			let primitiveInfo = VerifpalLib.primitiveInfo(word);
 			let queryInfo = VerifpalLib.queryInfo(word);

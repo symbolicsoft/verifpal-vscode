@@ -32,7 +32,6 @@ export function activate(context: vscode.ExtensionContext) {
 			let fullRange = new vscode.Range(0, 0, editor.document.lineCount, 0);
 			return VerifpalLib.getPrettyPrint(fileContents).then((result: string) => {
 				vscode.window.activeTextEditor!.edit((editBuilder) => {
-					console.log(result)
 					editBuilder.replace(fullRange, result);
 				});
 			});
