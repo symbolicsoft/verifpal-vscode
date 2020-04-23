@@ -11,7 +11,9 @@ import {
 'use strict';
 import * as vscode from 'vscode';
 import VerifpalLib from './VerifpalLib';
-import { format } from 'url';
+import {
+	format
+} from 'url';
 
 export function activate(context: vscode.ExtensionContext) {
 	if (!configGetEnabled()) {
@@ -26,17 +28,17 @@ export function activate(context: vscode.ExtensionContext) {
 		}], new HoverProvider())
 	);
 
-	context.subscriptions.push(
-		vscode.commands.registerTextEditorCommand('verifpal.format', (editor, edit) => {
-			let fileContents = editor.document.getText();
-			let fullRange = new vscode.Range(0, 0, editor.document.lineCount, 0);
+	vscode.languages.registerDocumentFormattingEditProvider('verifpal', {
+		provideDocumentFormattingEdits(document: vscode.TextDocument) {
+			let fileContents = document.getText();
+			let fullRange = new vscode.Range(0, 0, document.lineCount, 0);
 			return VerifpalLib.getPrettyPrint(fileContents).then((result: string) => {
-				vscode.window.activeTextEditor!.edit((editBuilder) => {
-					editBuilder.replace(fullRange, result);
-				});
+				const edit = new vscode.WorkspaceEdit();
+				edit.replace(document.uri, fullRange, result);
+				return vscode.workspace.applyEdit(edit);
 			});
-		})
-	);
+		}
+	});
 
 	const coverage = new CoverageProvider(context.subscriptions);
 	const refreshCoverage = () => {
@@ -52,4 +54,4 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand('verifpal.path', showVerifpalPath);
 }
 
-export function deactivate() { }
+export function deactivate() {}
