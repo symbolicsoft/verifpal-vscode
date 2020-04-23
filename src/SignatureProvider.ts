@@ -56,25 +56,25 @@ export default class SignatureProvider implements vscode.SignatureHelpProvider {
 	private walkBackwardsToBeginningOfCall(document: vscode.TextDocument, position: vscode.Position): any {
 		let currentLine = document.lineAt(position.line).text.substring(0, position.character);
 		let parenBalance = 0;
-		let commas: Array<vscode.Position> = [];
+		let commas: Array < vscode.Position > = [];
 		for (let char = position.character; char >= 0; char--) {
 			switch (currentLine[char]) {
-				case '(':
-					parenBalance--;
-					if (parenBalance < 0) {
-						return {
-							openParen: new vscode.Position(position.line, char),
-							commas: commas
-						};
-					}
-					break;
-				case ')':
-					parenBalance++;
-					break;
-				case ',':
-					if (parenBalance === 0) {
-						commas.push(new vscode.Position(position.line, char));
-					}
+			case '(':
+				parenBalance--;
+				if (parenBalance < 0) {
+					return {
+						openParen: new vscode.Position(position.line, char),
+						commas: commas
+					};
+				}
+				break;
+			case ')':
+				parenBalance++;
+				break;
+			case ',':
+				if (parenBalance === 0) {
+					commas.push(new vscode.Position(position.line, char));
+				}
 			}
 		}
 		return null;

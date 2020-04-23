@@ -2,11 +2,14 @@
  * SPDX-License-Identifier: GPL-3.0-only */
 
 /// <reference path="./cross-spawn.d.ts" />
-import { spawn } from 'cross-spawn';
-import { window, workspace } from 'vscode';
+import {
+	spawn
+} from 'cross-spawn';
+import {
+	window,
+	workspace
+} from 'vscode';
 import * as fs from 'fs';
-
-const VERIFPAL_NOT_FOUND = `[Verifpal] Specify Verifpal's location in your user config using verifpal.path.`
 
 export function configGetPath(): string {
 	const config = workspace.getConfiguration('verifpal');
@@ -21,12 +24,12 @@ export function configGetEnabled() {
 }
 
 export function configDeterminePath() {
-	let pathToVerifpal = '';
-	const localInstall = configGetPath()
+	let pathToVerifpal = 'verifpal';
+	const localInstall = configGetPath();
 	if (fs.existsSync(localInstall)) {
 		pathToVerifpal = localInstall;
 	} else {
-		pathToVerifpal = '/Users/nadim/Documents/git/verifpal/build/macos/verifpal';
+		throw new Error(`[Verifpal] Specify Verifpal's location in your user config using verifpal.path.`);
 	}
 	return pathToVerifpal;
 }
