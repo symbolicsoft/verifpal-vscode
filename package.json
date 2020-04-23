@@ -47,7 +47,7 @@
     ],
     "commands": [
       {
-        "command": "verifpal.coverage",
+        "command": "verifpal.verify",
         "title": "Verifpal: Run Attacker Analysis"
       },
       {

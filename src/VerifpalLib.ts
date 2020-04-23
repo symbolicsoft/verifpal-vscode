@@ -69,6 +69,26 @@ export default class VerifpalLib {
 		});
 	}
 
+	static getKnowledgeMap(fileContents: string) {
+		return VerifpalLib.execVerifpal(fileContents, ['internal-json', 'knowledgeMap']);
+	}
+
+	static getPrettyValue(fileContents: string) {
+		return VerifpalLib.execVerifpal(fileContents, ['internal-json', 'prettyValue']);
+	}
+
+	static getPrettyQuery(fileContents: string) {
+		return VerifpalLib.execVerifpal(fileContents, ['internal-json', 'prettyQuery']);
+	}
+
+	static getPrettyPrint(fileContents: string) {
+		return VerifpalLib.execVerifpal(fileContents, ['internal-json', 'prettyPrint']);
+	}
+
+	static getVerify(fileContents: string) {
+		return VerifpalLib.execVerifpal(fileContents, ['internal-json', 'verify']);
+	}
+
 	static getKnowledgeMapIndexFromConstant(constant: string, knowledgeMap) {
 		for (let i = 0; i < knowledgeMap.Constants.length; i++) {
 			if (knowledgeMap.Constants[i].Name === constant) {
@@ -244,18 +264,4 @@ export default class VerifpalLib {
 		}
 		return '';
 	}
-
-	static getKnowledgeMap(fileContents: string) {
-		return VerifpalLib.execVerifpal(fileContents, ['internal-json', 'knowledgeMap']);
-	}
-
-	static getPrettyValue(fileContents: string) {
-		return VerifpalLib.execVerifpal(fileContents, ['internal-json', 'prettyValue']);
-	}
-
-	static getPrettyPrint(fileContents: string) {
-		return VerifpalLib.execVerifpal(fileContents, ['internal-json', 'prettyPrint']);
-	}
-
-	static getCoverage(fileContents: string, fileName: string): any {}
 }
