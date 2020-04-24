@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, height=device-height, target-densitydpi=device-dpi">
+	<script src="$$EXTPATH1$$"></script>
+	<script src="$$EXTPATH2$$"></script>
+	<script src="$$EXTPATH3$$"></script>
+	<script src="$$EXTPATH4$$"></script>
+	<style type="text/css">
+		body {
+			padding: 10px;
+		}
+		div#header {
+		}
+		img#icon {
+			float: left;
+			width: 50px;
+			height: auto;
+			border-radius: 5px;
+		}
+		h2 {
+			float: left;
+			margin-left: 20px;
+		}
+		span#diagramText {
+			display: none;
+		}
+		div#diagram {
+			margin: 0 auto;
+			width: 80%;
+		}
+	</style>
+</head>
+
+<body>
+	<!--
+	<div id="header">
+		<img id="icon" src="$$ICON$$" alt="" />
+	</div>
+	-->
+	<span id="diagramText">
+		Title:$$MODELNAME$$
+		$$DIAGRAM$$
+	</span>
+	<div id="diagram"></div>
+	<script>
+		let diagramText = document.getElementById("diagramText").innerText;
+		let diagram = Diagram.parse(diagramText);
+		diagram.drawSVG("diagram", {
+			theme: 'simple'
+		});
+	</script>
+</body>
+
+</html>

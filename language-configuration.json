@@ -1,21 +1,21 @@
 {
-    "comments": {
-        "lineComment": "//",
-        "blockComment": [ "/*", "*/" ]
-    },
-    "brackets": [
+	"comments": {
+		"lineComment": "//",
+		"blockComment": ["/*", "*/"]
+	},
+	"brackets": [
         ["{", "}"],
         ["[", "]"],
         ["(", ")"]
     ],
-    "autoClosingPairs": [
+	"autoClosingPairs": [
         ["{", "}"],
         ["[", "]"],
         ["(", ")"],
         ["\"", "\""],
         ["'", "'"]
     ],
-    "surroundingPairs": [
+	"surroundingPairs": [
         ["{", "}"],
         ["[", "]"],
         ["(", ")"],

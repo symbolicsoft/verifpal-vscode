@@ -85,6 +85,10 @@ export default class VerifpalLib {
 		return VerifpalLib.execVerifpal(fileContents, ['internal-json', 'prettyPrint']);
 	}
 
+	static getPrettyDiagram(fileContents: string) {
+		return VerifpalLib.execVerifpal(fileContents, ['internal-json', 'prettyDiagram']);
+	}
+
 	static getVerify(fileContents: string) {
 		return VerifpalLib.execVerifpal(fileContents, ['internal-json', 'verify']);
 	}

@@ -5,6 +5,7 @@ import * as vscode from 'vscode';
 import VerifpalLib from './VerifpalLib';
 import HoverProvider from './HoverProvider';
 import AnalysisProvider from './AnalysisProvider';
+import DiagramProvider from './DiagramProvider';
 import {
 	configGetEnabled,
 	configDeterminePath
@@ -23,23 +24,45 @@ export function activate(context: vscode.ExtensionContext) {
 		}], new HoverProvider())
 	);
 
-	vscode.languages.registerDocumentFormattingEditProvider('verifpal', {
-		provideDocumentFormattingEdits(document: vscode.TextDocument) {
-			let fileContents = document.getText();
-			let fullRange = new vscode.Range(0, 0, document.lineCount, 0);
-			return VerifpalLib.getPrettyPrint(fileContents).then((result: string) => {
-				const edit = new vscode.WorkspaceEdit();
-				edit.replace(document.uri, fullRange, result);
-				return vscode.workspace.applyEdit(edit);
-			});
-		}
-	});
+	context.subscriptions.push(
+		vscode.languages.registerDocumentFormattingEditProvider('verifpal', {
+			provideDocumentFormattingEdits(document: vscode.TextDocument) {
+				let fileContents = document.getText();
+				let fullRange = new vscode.Range(0, 0, document.lineCount, 0);
+				return VerifpalLib.getPrettyPrint(fileContents).then((result: string) => {
+					const edit = new vscode.WorkspaceEdit();
+					edit.replace(document.uri, fullRange, result);
+					return vscode.workspace.applyEdit(edit);
+				});
+			}
+		})
+	)
 
-	vscode.workspace.onWillSaveTextDocument(event => {
-		const openEditor = vscode.window.visibleTextEditors.filter(
-			editor => editor.document.uri === event.document.uri
-		)[0]
-	});
+	context.subscriptions.push(
+		vscode.commands.registerTextEditorCommand('verifpal.showDiagram', (editor: vscode.TextEditor) => {
+			let fileName = editor.document.fileName;
+			let fileContents = editor.document.getText();
+			DiagramProvider.webviewPanel = vscode.window.createWebviewPanel(
+				'verifpal',
+				'Verifpal Protocon Diagram',
+				vscode.ViewColumn.Beside, {
+					enableScripts: true
+				}
+			);
+			DiagramProvider.webviewPanel.onDidDispose(() => {
+				DiagramProvider.diagramActive = false;
+			})
+			DiagramProvider.renderDiagram(fileName, fileContents, context.extensionPath);
+		})
+	);
+
+	vscode.workspace.onDidSaveTextDocument((document: vscode.TextDocument) => {
+		if (DiagramProvider.diagramActive) {
+			let fileName = document.fileName;
+			let fileContents = document.getText();
+			DiagramProvider.renderDiagram(fileName, fileContents, context.extensionPath);
+		}
+    });
 
 	const showVerifpalPath = () => {
 		vscode.window.showInformationMessage(

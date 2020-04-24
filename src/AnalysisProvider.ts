@@ -3,9 +3,6 @@
 
 import * as vscode from 'vscode';
 import VerifpalLib from './VerifpalLib';
-import {
-	match
-} from 'assert';
 
 let analysisActive = false;
 export default class AnalysisProvider {

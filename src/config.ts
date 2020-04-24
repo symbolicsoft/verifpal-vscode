@@ -3,10 +3,6 @@
 
 /// <reference path="./cross-spawn.d.ts" />
 import {
-	spawn
-} from 'cross-spawn';
-import {
-	window,
 	workspace
 } from 'vscode';
 import * as fs from 'fs';
