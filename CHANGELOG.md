@@ -5,6 +5,13 @@
 
 # Change Log
 
+## 1.0.0
+- Add live analysis support (requires Verifpal 0.13.0 or higher).
+- Add formatting support (requires Verifpal 0.13.0 or higher).
+- Add hover information support (requires Verifpal 0.13.0 or higher).
+- Add value peeking (requires Verifpal 0.13.0 or higher).
+- Add diagram generation support (requires Verifpal 0.13.0 or higher).
+
 ## 0.0.12
 - Add `freshness` and `unlinkability` query keywords.
 
