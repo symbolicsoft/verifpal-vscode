@@ -51,4 +51,4 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand('verifpal.path', showVerifpalPath);
 }
 
-export function deactivate() { }
+export function deactivate() {}
