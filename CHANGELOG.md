@@ -5,6 +5,10 @@
 
 # Change Log
 
+## 1.0.1
+- Move beyond deprecated VSCode extension APIs.
+- Improve documentation.
+
 ## 1.0.0
 - Add live analysis support (requires Verifpal 0.13.0 or higher).
 - Add formatting support (requires Verifpal 0.13.0 or higher).
