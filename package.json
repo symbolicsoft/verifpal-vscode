@@ -83,12 +83,7 @@
 	},
 	"devDependencies": {
 		"@types/node": "latest",
-		"vscode": "latest"
-	},
-	"__metadata": {
-		"id": "6c419ee6-2f9f-45ff-84c5-6f63de449fd1",
-		"publisherDisplayName": "Symbolic Software",
-		"publisherId": "4a0b804a-5a62-4d83-ba2a-4f17c3afa6ed"
+		"vscode": "^1.1.37"
 	},
 	"dependencies": {
 		"cross-spawn": "latest"
