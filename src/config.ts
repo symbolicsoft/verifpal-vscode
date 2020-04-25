@@ -2,28 +2,28 @@
  * SPDX-License-Identifier: GPL-3.0-only */
 
 /// <reference path="./cross-spawn.d.ts" />
-import * as vscode from 'vscode';
-import * as fs from 'fs';
+import * as vscode from "vscode";
+import * as fs from "fs";
 
 export function configGetPath(): string {
-	const config = vscode.workspace.getConfiguration('verifpal');
+	const config = vscode.workspace.getConfiguration("verifpal");
 	if (config) {
-		return config.get('path') || "";
+		return config.get("path") || "";
 	}
-	return '';
+	return "";
 }
 
 export function configGetEnabled() {
-	return vscode.workspace.getConfiguration('verifpal').get('enabled')
+	return vscode.workspace.getConfiguration("verifpal").get("enabled");
 }
 
 export function configDeterminePath() {
-	let pathToVerifpal = 'verifpal';
+	let pathToVerifpal = "verifpal";
 	const localInstall = configGetPath();
 	if (fs.existsSync(localInstall)) {
 		pathToVerifpal = localInstall;
 	} else {
-		vscode.window.showInformationMessage(`Verifpal: Specify Verifpal's location in your user config using verifpal.path.`);
+		vscode.window.showInformationMessage("Verifpal: Specify Verifpal's location in your user config using verifpal.path.");
 	}
 	return pathToVerifpal;
 }

@@ -7,7 +7,10 @@ dependencies:
 clean:
 	@$(RM) -rf out
 
-publish:
-	@vsce publish
+lint:
+	@eslint src/*
 
-.PHONY: dependencies clean publish .vscode node_modules out src syntax
+publish:
+	@vsce publish -p "${GITLAB_VSCE_PAN}"
+
+.PHONY: dependencies clean lint publish .vscode node_modules out src syntax

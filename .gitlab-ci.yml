@@ -1,0 +1,19 @@
+stages:
+  - lint
+  - publish
+
+lint:
+  image: node:latest
+  stage: lint 
+  script:
+    - make dependencies
+    - make lint
+
+publish:
+  image: node:latest
+  stage: publish
+  only:
+    - tags
+  script:
+    - make dependencies
+    - vsce publish -p "${GITLAB_VSCE_PAN}"

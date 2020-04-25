@@ -4,11 +4,10 @@
 /// <reference path="./cross-spawn.d.ts" />
 import {
 	spawn
-} from 'cross-spawn';
-import * as vscode from 'vscode';
+} from "cross-spawn";
 import {
 	configDeterminePath
-} from './config';
+} from "./config";
 
 /*
 type KnowledgeMap struct {
@@ -48,13 +47,13 @@ export default class VerifpalLib {
 			let verifpalOutput = "";
 			let verifpalOutputError = "";
 			const verifpalProc = spawn(configDeterminePath(), args);
-			verifpalProc.stdout.on('data', (data) => {
+			verifpalProc.stdout.on("data", (data) => {
 				verifpalOutput += data.toString();
 			});
-			verifpalProc.stderr.on('data', (data) => {
+			verifpalProc.stderr.on("data", (data) => {
 				verifpalOutputError += data.toString();
 			});
-			verifpalProc.on('exit', () => {
+			verifpalProc.on("exit", () => {
 				if (verifpalOutputError) {
 					reject(verifpalOutputError);
 				} else {
@@ -70,36 +69,36 @@ export default class VerifpalLib {
 	}
 
 	static getKnowledgeMap(fileContents: string) {
-		return VerifpalLib.execVerifpal(fileContents, ['internal-json', 'knowledgeMap']);
+		return VerifpalLib.execVerifpal(fileContents, ["internal-json", "knowledgeMap"]);
 	}
 
 	static getPrettyValue(fileContents: string) {
-		return VerifpalLib.execVerifpal(fileContents, ['internal-json', 'prettyValue']);
+		return VerifpalLib.execVerifpal(fileContents, ["internal-json", "prettyValue"]);
 	}
 
 	static getPrettyQuery(fileContents: string) {
-		return VerifpalLib.execVerifpal(fileContents, ['internal-json', 'prettyQuery']);
+		return VerifpalLib.execVerifpal(fileContents, ["internal-json", "prettyQuery"]);
 	}
 
 	static getPrettyPrint(fileContents: string) {
-		return VerifpalLib.execVerifpal(fileContents, ['internal-json', 'prettyPrint']);
+		return VerifpalLib.execVerifpal(fileContents, ["internal-json", "prettyPrint"]);
 	}
 
 	static getPrettyDiagram(fileContents: string) {
-		return VerifpalLib.execVerifpal(fileContents, ['internal-json', 'prettyDiagram']);
+		return VerifpalLib.execVerifpal(fileContents, ["internal-json", "prettyDiagram"]);
 	}
 
 	static getVerify(fileContents: string) {
-		return VerifpalLib.execVerifpal(fileContents, ['internal-json', 'verify']);
+		return VerifpalLib.execVerifpal(fileContents, ["internal-json", "verify"]);
 	}
 
 	static getKnowledgeMapIndexFromConstant(constant: string, knowledgeMap) {
 		for (let i = 0; i < knowledgeMap.Constants.length; i++) {
 			if (knowledgeMap.Constants[i].Name === constant) {
-				return i
+				return i;
 			}
 		}
-		return -1
+		return -1;
 	}
 
 	static constantInfo = (constantName: string, knowledgeMap) => {
@@ -108,8 +107,8 @@ export default class VerifpalLib {
 			Assigned: "",
 			KnownBy: "",
 			Valid: false,
-		}
-		let i = VerifpalLib.getKnowledgeMapIndexFromConstant(constantName, knowledgeMap)
+		};
+		let i = VerifpalLib.getKnowledgeMapIndexFromConstant(constantName, knowledgeMap);
 		if (i >= 0) {
 			info.Creator = knowledgeMap.Creator[i];
 			info.Assigned = JSON.stringify(knowledgeMap.Assigned[i]) + "\n";
@@ -235,12 +234,12 @@ export default class VerifpalLib {
 				eg: "SHAMIR_JOIN(sa, sb): k",
 				help: "Here, sa and sb must be two distinct elements out of the set (s1, s2, s3) in order to obtain k."
 			}
-		}
-		if (primitives.hasOwnProperty(primitiveName.toUpperCase())) {
+		};
+		if (({}).hasOwnProperty.call(primitives, primitiveName.toUpperCase())) {
 			let p = primitives[primitiveName.toUpperCase()];
 			return `${p.eg}\n// ${p.help}`;
 		}
-		return '';
+		return "";
 	};
 
 	static queryInfo = (queryName: string) => {
@@ -261,11 +260,11 @@ export default class VerifpalLib {
 				eg: "unlinkability? a, b, c",
 				help: "Checks whether all given values satisfy freshness. If they do, checks whether the attacker can determine them as being the output of the same primitive or as otherwise having a common source. If any of these checks fail, the query fails.",
 			}
-		}
-		if (queries.hasOwnProperty(queryName.toLowerCase())) {
+		};
+		if (({}).hasOwnProperty.call(queries, queryName.toLowerCase())) {
 			let q = queries[queryName.toLowerCase()];
 			return `${q.eg}\n// ${q.help}`;
 		}
-		return '';
+		return "";
 	}
 }

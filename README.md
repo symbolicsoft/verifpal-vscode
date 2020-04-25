@@ -5,7 +5,7 @@
 
 # Verifpal for Visual Studio Code
 
-[![](http://img.youtube.com/vi/it_hJkVU-UA/0.jpg)](http://www.youtube.com/watch?v=it_hJkVU-UA "Verifpal for Visual Studio Code")
+[![](https://img.youtube.com/vi/it_hJkVU-UA/0.jpg)](http://www.youtube.com/watch?v=it_hJkVU-UA "Verifpal for Visual Studio Code")
 
 ## What is Verifpal for Visual Studio Code?
 Verifpal for Visual Studio Code is an extension that provides IDE features for the [Verifpal](https://verifpal.com) protocol modeling and analysis software within the popular Microsoft [Visual Studio Code](https://code.visualstudio.com/) editor. It is an official extension that is developed and maintained by the Verifpal project. **Verifpal for Visual Studio Code requires Verifpal 0.13.0 or higher to be installed for all functionality to work correctly.**

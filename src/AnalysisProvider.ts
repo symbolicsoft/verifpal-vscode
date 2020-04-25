@@ -1,22 +1,22 @@
 /* SPDX-FileCopyrightText: © 2019-2020 Nadim Kobeissi <nadim@symbolic.software>
  * SPDX-License-Identifier: GPL-3.0-only */
 
-import * as vscode from 'vscode';
-import VerifpalLib from './VerifpalLib';
+import * as vscode from "vscode";
+import VerifpalLib from "./VerifpalLib";
 
 let analysisActive = false;
 export default class AnalysisProvider {
 
 	static greenDecoration = vscode.window.createTextEditorDecorationType({
-		border: '1px solid green',
-		borderRadius: '3px',
-		fontWeight: 'bold'
+		border: "1px solid green",
+		borderRadius: "3px",
+		fontWeight: "bold"
 	});
 
 	static redDecoration = vscode.window.createTextEditorDecorationType({
-		border: '1px solid red',
-		borderRadius: '3px',
-		fontWeight: 'bold'
+		border: "1px solid red",
+		borderRadius: "3px",
+		fontWeight: "bold"
 	});
 
 	static analysisOutput = vscode.window.createOutputChannel("Verifpal Analysis");
@@ -25,7 +25,7 @@ export default class AnalysisProvider {
 		let fileContents = editor.document.getText();
 		let passedQueries: vscode.DecorationOptions[] = [];
 		let failedQueries: vscode.DecorationOptions[] = [];
-		const fileContentsArray = fileContents.split('\n');
+		const fileContentsArray = fileContents.split("\n");
 		for (let i = 0; i < parsedResults.length; i++) {
 			if (parsedResults[i].Resolved) {
 				this.analysisOutput.appendLine(`${parsedResults[i].Query}\n${parsedResults[i].Summary}`);
@@ -53,7 +53,7 @@ export default class AnalysisProvider {
 					}
 				}
 				if (!parsedResults[i].Resolved) {
-					continue
+					continue;
 				}
 				let constantNames = parsedResults[i].Constants;
 				for (let ii = 0; ii < constantNames.length; ii++) {
@@ -74,55 +74,55 @@ export default class AnalysisProvider {
 		editor.setDecorations(AnalysisProvider.redDecoration, failedQueries);
 	}
 
-	static verify(editor: vscode.TextEditor, edit: vscode.TextEditorEdit) {
+	static verify(editor: vscode.TextEditor) {
 		if (analysisActive) {
-			vscode.window.showInformationMessage(`Verifpal: Analysis is already running.`);
-			return
+			vscode.window.showInformationMessage("Verifpal: Analysis is already running.");
+			return;
 		}
 		let fileContents = editor.document.getText();
-		vscode.window.showInformationMessage(`Verifpal: Running analysis...`);
+		vscode.window.showInformationMessage("Verifpal: Running analysis...");
 		analysisActive = true;
 		return VerifpalLib.getVerify(fileContents).then((result: string) => {
 			analysisActive = false;
-			result = result.split(/\r?\n/).pop() || '';
+			result = result.split(/\r?\n/).pop() || "";
 			const verifyResults = JSON.parse(result);
 			const parsedResults: Object[] = [];
 			for (let i = 0; i < verifyResults.length; i++) {
-				let q = JSON.stringify(verifyResults[i].Query)
+				let q = JSON.stringify(verifyResults[i].Query);
 				VerifpalLib.getPrettyQuery(q).then((result: string) => {
 					let constantNames: string[] = [];
 					switch (verifyResults[i].Query.Kind) {
 					case "confidentiality":
 						for (let ii = 0; ii < verifyResults[i].Query.Constants.length; ii++) {
-							constantNames.push(verifyResults[i].Query.Constants[ii].Name)
+							constantNames.push(verifyResults[i].Query.Constants[ii].Name);
 						}
 						break;
 					case "authentication":
 						for (let ii = 0; ii < verifyResults[i].Query.Message.Constants.length; ii++) {
-							constantNames.push(verifyResults[i].Query.Message.Constants[ii].Name)
+							constantNames.push(verifyResults[i].Query.Message.Constants[ii].Name);
 						}
 						break;
 					case "freshness":
 						for (let ii = 0; ii < verifyResults[i].Query.Constants.length; ii++) {
-							constantNames.push(verifyResults[i].Query.Constants[ii].Name)
+							constantNames.push(verifyResults[i].Query.Constants[ii].Name);
 						}
 						break;
 					case "unlinkability":
 						for (let ii = 0; ii < verifyResults[i].Query.Constants.length; ii++) {
-							constantNames.push(verifyResults[i].Query.Constants[ii].Name)
+							constantNames.push(verifyResults[i].Query.Constants[ii].Name);
 						}
 						break;
 					}
-					let formattedSummary = verifyResults[i].Summary.replace(/\[(\d|;)+m/gm, '');
+					let formattedSummary = verifyResults[i].Summary.replace(/\[(\d|;)+m/gm, "");
 					let p = {
 						Query: result,
 						Resolved: verifyResults[i].Resolved,
 						Summary: formattedSummary,
 						Constants: constantNames
-					}
-					parsedResults.push(p)
+					};
+					parsedResults.push(p);
 					if (parsedResults.length === verifyResults.length) {
-						vscode.window.showInformationMessage(`Verifpal: Analysis complete.`);
+						vscode.window.showInformationMessage("Verifpal: Analysis complete.");
 						AnalysisProvider.decorate(editor, parsedResults);
 					}
 				});
