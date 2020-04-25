@@ -5,6 +5,10 @@
 
 # Change Log
 
+## 1.0.2
+- Fix a bug that prevented diagram visualizations for working on Windows.
+- Removed a message that incessantly kept popping up asking the user to set `verifpal.path`.
+
 ## 1.0.1
 - Move beyond deprecated VSCode extension APIs.
 - Improve documentation.
