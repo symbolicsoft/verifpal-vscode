@@ -16,9 +16,9 @@ export default class DiagramProvider {
 	static renderDiagram(fileName: string, fileContents: string, extensionPath: string) {
 		this.diagramActive = true;
 		let modelName = path.basename(fileName);
-		let diagramHtml = fs.readFileSync(vscode.Uri.file(
+		let diagramHtml = fs.readFileSync(
 			path.join(extensionPath, "res", "diagram.html")
-		).path).toString();
+		).toString();
 		VerifpalLib.getPrettyDiagram(fileContents).then((result: string) => {
 			let ep1 = this.webviewPanel.webview.asWebviewUri(vscode.Uri.file(
 				path.join(extensionPath, "res", "webfont.js")
