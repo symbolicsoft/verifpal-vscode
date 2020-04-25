@@ -16,7 +16,7 @@ fi
 
 git commit -am "Verifpal for Visual Studio Code ${VERSION}" &> /dev/null
 git push &> /dev/null
-git tag -a "v${VERSION}" -m "Verifpal for Visual Studio Code${VERSION}" -m "${RELEASE_NOTES}" &> /dev/null
+git tag -a "v${VERSION}" -m "Verifpal for Visual Studio Code ${VERSION}" &> /dev/null
 git push origin "v${VERSION}" &> /dev/null
 
 echo "[Verifpal for Visual Studio Code] v${VERSION} tagged."
