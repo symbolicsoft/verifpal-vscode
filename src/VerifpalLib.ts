@@ -130,7 +130,7 @@ export default class VerifpalLib {
 				arity: -1,
 				output: 1,
 				eg: "CONCAT(a, b): c",
-				help: "Concatenates two or more values2 into one value. For example, the concatenation of the strings `cat` and `dog` would be `catdog`."
+				help: "Concatenates two or more values into one value. For example, the concatenation of the strings `cat` and `dog` would be `catdog`."
 			},
 			"SPLIT": {
 				arity: 1,
