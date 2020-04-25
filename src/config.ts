@@ -22,8 +22,6 @@ export function configDeterminePath() {
 	const localInstall = configGetPath();
 	if (fs.existsSync(localInstall)) {
 		pathToVerifpal = localInstall;
-	} else {
-		vscode.window.showInformationMessage("Verifpal: Specify Verifpal's location in your user config using verifpal.path.");
 	}
 	return pathToVerifpal;
 }
