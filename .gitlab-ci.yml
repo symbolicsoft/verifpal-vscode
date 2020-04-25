@@ -16,4 +16,5 @@ publish:
     - tags
   script:
     - make dependencies
+    - npm install -g vsce
     - vsce publish -p "${GITLAB_VSCE_PAN}"
