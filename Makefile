@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 dependencies:
+	@npm install -g eslint typescript
 	@npm install
 
 clean:
