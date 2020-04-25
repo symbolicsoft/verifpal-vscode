@@ -29,6 +29,11 @@ In order to show a diagram visualizing your protocol, open the Visual Studio Cod
 
 In order to launch an analysis, open the Visual Studio Code Command Palette (`Ctrl+Shift+P` on Windows and Linux, `⌘+Shift+P` on macOS) and search for the _"Verifpal: Run Attacker Analysis"_ command. **It is recommended that this feature not be used for models which take a long time to be analyzed.** Using Verifpal in the command line for more complex models will likely yield a better workflow since you will not be able to edit your model while analysis is running.
 
+Verifpal for Visual Studio Code may be configured via the following options in your Visual Studio Code User Settings file:
+
+- `verifpal.enabled`: enables or disables IDE features. (eg. `true`)
+- `verifpal.path`: Sets the path for the Verifpal binary on your computer. (eg. `/usr/local/bin/verifpal`)
+
 ## Discussion
 Sign up to the [Verifpal Mailing List](https://lists.symbolic.software/mailman/listinfo/verifpal) to stay informed on the latest news and announcements regarding Verifpal, and to participate in Verifpal discussions.
 
