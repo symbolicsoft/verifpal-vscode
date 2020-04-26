@@ -44,7 +44,7 @@ export function activate(context: vscode.ExtensionContext) {
 			let fileContents = editor.document.getText();
 			DiagramProvider.webviewPanel = vscode.window.createWebviewPanel(
 				"verifpal",
-				"Verifpal Protocon Diagram",
+				"Verifpal Protocol Diagram",
 				vscode.ViewColumn.Beside, {
 					enableScripts: true
 				}
