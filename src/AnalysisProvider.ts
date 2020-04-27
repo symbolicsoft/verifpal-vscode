@@ -76,7 +76,7 @@ export default class AnalysisProvider {
 
 	static verify(editor: vscode.TextEditor) {
 		if (analysisActive) {
-			vscode.window.showInformationMessage("Verifpal: Analysis is already running.");
+			vscode.window.showErrorMessage("Verifpal: Analysis is already running.");
 			return;
 		}
 		let fileContents = editor.document.getText();
@@ -127,6 +127,9 @@ export default class AnalysisProvider {
 					}
 				});
 			}
+		}).catch((err) => {
+			analysisActive = false;
+			vscode.window.showErrorMessage("Verifpal: Your model is invalid and cannot be analyzed or visualized. Check for syntax errors.");
 		});
 	}
 }
