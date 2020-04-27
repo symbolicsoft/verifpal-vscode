@@ -5,6 +5,9 @@
 
 # Change Log
 
+## 1.0.4
+- Correctly handle errors when user attempts to analyze or visualize an invalid model (due to syntax errors or similar).
+
 ## 1.0.3
 - Fixed a typo.
 
