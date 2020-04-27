@@ -127,7 +127,7 @@ export default class AnalysisProvider {
 					}
 				});
 			}
-		}).catch((err) => {
+		}).catch(() => {
 			analysisActive = false;
 			vscode.window.showErrorMessage("Verifpal: Your model is invalid and cannot be analyzed or visualized. Check for syntax errors.");
 		});

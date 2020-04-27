@@ -43,7 +43,7 @@ export default class DiagramProvider {
 			diagramHtml = diagramHtml.replace("$$MODELNAME$$", modelName);
 			diagramHtml = diagramHtml.replace("$$DIAGRAM$$", result);
 			this.webviewPanel.webview.html = diagramHtml;
-		}).catch((err) => {
+		}).catch(() => {
 			vscode.window.showErrorMessage("Verifpal: Your model is invalid and cannot be analyzed or visualized. Check for syntax errors.");
 		});
 	}
