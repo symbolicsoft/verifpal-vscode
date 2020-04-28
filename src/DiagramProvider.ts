@@ -32,14 +32,10 @@ export default class DiagramProvider {
 			let ep4 = this.webviewPanel.webview.asWebviewUri(vscode.Uri.file(
 				path.join(extensionPath, "res", "sequence-diagram-min.js")
 			));
-			let icon = this.webviewPanel.webview.asWebviewUri(vscode.Uri.file(
-				path.join(extensionPath, "res", "icon.png")
-			));
 			diagramHtml = diagramHtml.replace("$$EXTPATH1$$", ep1);
 			diagramHtml = diagramHtml.replace("$$EXTPATH2$$", ep2);
 			diagramHtml = diagramHtml.replace("$$EXTPATH3$$", ep3);
 			diagramHtml = diagramHtml.replace("$$EXTPATH4$$", ep4);
-			diagramHtml = diagramHtml.replace("$$ICON$$", icon);
 			diagramHtml = diagramHtml.replace("$$MODELNAME$$", modelName);
 			diagramHtml = diagramHtml.replace("$$DIAGRAM$$", result);
 			this.webviewPanel.webview.html = diagramHtml;

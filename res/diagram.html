@@ -8,38 +8,62 @@
 	<script src="$$EXTPATH2$$"></script>
 	<script src="$$EXTPATH3$$"></script>
 	<script src="$$EXTPATH4$$"></script>
+	<script src="$$EXTPATH5$$"></script>
 	<style type="text/css">
 		body {
 			padding: 10px;
+			background-color: var(--vscode-editor-background);
 		}
-		div#header {
-		}
-		img#icon {
-			float: left;
-			width: 50px;
-			height: auto;
-			border-radius: 5px;
-		}
-		h2 {
-			float: left;
-			margin-left: 20px;
-		}
+		
 		span#diagramText {
 			display: none;
 		}
+
 		div#diagram {
 			margin: 0 auto;
 			width: 80%;
+		}
+
+		.title rect,
+		.title path {
+			fill: var(--vscode-editor-findMatchBackground);
+			stroke: var(--vscode-editor-findMatchBorder);
+		}
+
+		.title text {
+			fill: var(--vscode-editor-foreground);
+		}
+
+		line,
+		#markerArrowBlock {
+			stroke: var(--vscode-editor-foreground);
+			fill: var(--vscode-editor-foreground);
+		}
+
+		.actor rect,
+		.actor path {
+			fill: var(--vscode-editor-foreground);
+			stroke: var(--vscode-editor-foreground);
+		}
+
+		.actor text {
+			fill: var(--vscode-editor-background);
+		}
+
+		.note rect,
+		.note path {
+			fill: var(--vscode-editor-selectionHighlightBackground);
+			stroke: var(--vscode-editor-foreground);
+		}
+		
+		.note text,
+		.signal text {
+			fill: var(--vscode-editor-foreground);
 		}
 	</style>
 </head>
 
 <body>
-	<!--
-	<div id="header">
-		<img id="icon" src="$$ICON$$" alt="" />
-	</div>
-	-->
 	<span id="diagramText">
 		Title:$$MODELNAME$$
 		$$DIAGRAM$$
