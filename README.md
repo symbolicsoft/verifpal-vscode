@@ -34,6 +34,8 @@ Verifpal for Visual Studio Code may be configured via the following options in y
 - `verifpal.enabled`: enables or disables IDE features. (eg. `true`)
 - `verifpal.path`: Sets the path for the Verifpal binary on your computer. (eg. `/usr/local/bin/verifpal`)
 
+**Note**: If you have installed Verifpal via the Snap Store, you will need to set `verifpal.path` to `/snap/verifpal/current/bin/verifpal`.
+
 ## Discussion
 Sign up to the [Verifpal Mailing List](https://lists.symbolic.software/mailman/listinfo/verifpal) to stay informed on the latest news and announcements regarding Verifpal, and to participate in Verifpal discussions.
 
