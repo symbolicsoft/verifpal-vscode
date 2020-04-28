@@ -5,6 +5,9 @@
 
 # Change Log
 
+## 1.0.6
+- Fix diagrams being hard to read with certain VSCode themes.
+
 ## 1.0.5
 - Diagrams now display properly in Visual Studio Code editors using dark themes.
 
