@@ -232,7 +232,7 @@ export default class VerifpalLib {
 				arity: 3,
 				output: 1,
 				eg: "UNBLIND(k, m, SIGN(a, BLIND(k, m))): SIGN(a, m)",
-				help: "Once `BLIND(k, m`)` is signed by the signer, the sender can convert `SIGN(a, BLIND(k, m))` to `SIGN(a, m)` by unblinding the message using their secret blinding factor `k`. The resulting unblinded signature can then be used as if it were a regular signature by `a` over `m`."
+				help: "Once `BLIND(k, m)` is signed by the signer, the sender can convert `SIGN(a, BLIND(k, m))` to `SIGN(a, m)` by unblinding the message using their secret blinding factor `k`. The resulting unblinded signature can then be used as if it were a regular signature by `a` over `m`."
 			},
 			"SHAMIR_SPLIT": {
 				arity: 1,
