@@ -5,6 +5,9 @@
 
 # Change Log
 
+## 1.0.8
+- Fix a typo.
+
 ## 1.0.7
 - Add support for the new `BLIND` and `UNBLIND` primitives.
 
