@@ -5,6 +5,9 @@
 
 # Change Log
 
+## 1.0.7
+- Add support for the new `BLIND` and `UNBLIND` primitives.
+
 ## 1.0.6
 - Fix diagrams being hard to read with certain VSCode themes.
 

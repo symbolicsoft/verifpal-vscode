@@ -222,6 +222,18 @@ export default class VerifpalLib {
 				eg: "RINGSIGNVERIF(G^a, G^b, G^c, m, RINGSIGN(a, G^b, G^c, m)): m",
 				help: "Verifies if a ring signature can be authenticated. The signer’s public key must match one or more of the public keys provided, but the public keys may be provided in any order and not necessarily in the order used during the RINGSIGN operation."
 			},
+			"BLIND": {
+				arity: 2,
+				output: 1,
+				eg: "BLIND(k, m): b",
+				help: "Message blinding primitive, useful for the implementation of blind signatures. Here, the sender uses the secret \"blinding factor\" `k` in order to blind message `m`, which can then be sent to the signer, who will be able to produce a signature on `m` without knowing `m`. Used in conjunction with UNBLIND -- see UNBLIND's documentation for more information."
+			},
+			"UNBLIND": {
+				arity: 3,
+				output: 1,
+				eg: "UNBLIND(k, m, SIGN(a, BLIND(k, m))): SIGN(a, m)",
+				help: "Once `BLIND(k, m`)` is signed by the signer, the sender can convert `SIGN(a, BLIND(k, m))` to `SIGN(a, m)` by unblinding the message using their secret blinding factor `k`. The resulting unblinded signature can then be used as if it were a regular signature by `a` over `m`."
+			},
 			"SHAMIR_SPLIT": {
 				arity: 1,
 				output: 3,
