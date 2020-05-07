@@ -152,7 +152,7 @@ export default class VerifpalLib {
 			},
 			"PW_HASH": {
 				output: 1,
-				eg: "PW_HASH(a): x",
+				eg: "PW_HASH(a...): x",
 				help: "Password hashing function, similar in practice to, for example, Scrypt or Argon2. Hashes passwords and produces output that is suitable for use as a private key, secret key or other sensitive key material. Useful in conjunction with values declared using `knows password a`."
 			},
 			"ENC": {
