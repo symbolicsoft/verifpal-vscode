@@ -250,6 +250,10 @@ export default class VerifpalLib {
 			"unlinkability": {
 				eg: "unlinkability? a, b, c",
 				help: "Checks whether all given values satisfy freshness. If they do, checks whether the attacker can determine them as being the output of the same primitive or as otherwise having a common source. If any of these checks fail, the query fails.",
+			},
+			"equivalence": {
+				eg: "equivalence? ss_a, ss_b",
+				help: "Checks whether any protocol scenario can be derived such that the given values are not equivalent to one another. This query could be useful for checking if all parties derived the same shared secret, for example."
 			}
 		};
 		if (({}).hasOwnProperty.call(queries, queryName.toLowerCase())) {

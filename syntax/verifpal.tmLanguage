@@ -208,7 +208,7 @@
         </dict>
         <dict>
           <key>match</key>
-          <string>(confidentiality\?|authentication\?|freshness\?|unlinkability\?)</string>
+          <string>(confidentiality\?|authentication\?|freshness\?|unlinkability\?|equivalence\?)</string>
           <key>name</key>
           <string>markup.italic.verifpal</string>
         </dict>
@@ -249,7 +249,7 @@
         </dict>
         <dict>
           <key>begin</key>
-          <string>(((confidentiality)|(authentication)|(freshness)|(unlinkability))\?)</string>
+          <string>(((confidentiality)|(authentication)|(freshness)|(unlinkability)|(equivalence))\?)</string>
           <key>beginCaptures</key>
           <dict>
             <key>1</key>

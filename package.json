@@ -81,12 +81,12 @@
 		"compile": "tsc -watch -p ./"
 	},
 	"devDependencies": {
-		"@types/vscode": "^1.44.0",
 		"@types/node": "latest",
-		"typescript": "latest",
-		"eslint": "latest",
+		"@types/vscode": "^1.44.0",
 		"@typescript-eslint/eslint-plugin": "latest",
-		"@typescript-eslint/parser": "latest"
+		"@typescript-eslint/parser": "latest",
+		"eslint": "latest",
+		"typescript": "latest"
 	},
 	"dependencies": {
 		"cross-spawn": "latest"

@@ -112,6 +112,11 @@ export default class AnalysisProvider {
 							constantNames.push(verifyResults[i].Query.Constants[ii].Name);
 						}
 						break;
+					case "equivalence":
+						for (let ii = 0; ii < verifyResults[i].Query.Constants.length; ii++) {
+							constantNames.push(verifyResults[i].Query.Constants[ii].Name);
+						}
+						break;
 					}
 					let formattedSummary = verifyResults[i].Summary.replace(/\[(\d|;)+m/gm, "");
 					let p = {
