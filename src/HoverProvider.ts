@@ -6,7 +6,7 @@ import VerifpalLib from "./VerifpalLib";
 export default class HoverProvider {
 	provideHover(document: vscode.TextDocument, position: vscode.Position): Promise < any > {
 		const wordPosition = document.getWordRangeAtPosition(position);
-		if (!wordPosition) return new Promise((resolve) => resolve());
+		if (!wordPosition) return Promise.resolve();
 		const word = document.getText(wordPosition);
 		const fileContents = document.getText();
 		return VerifpalLib.getKnowledgeMap(fileContents).then((result: string) => {
