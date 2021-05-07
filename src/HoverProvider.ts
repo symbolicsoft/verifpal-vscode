@@ -11,8 +11,8 @@ export default class HoverProvider {
 		const fileContents = document.getText();
 		return VerifpalLib.getKnowledgeMap(fileContents).then((result: string) => {
 			const knowledgeMap = JSON.parse(result.toString());
-			let primitiveInfo = VerifpalLib.primitiveInfo(word);
-			let queryInfo = VerifpalLib.queryInfo(word);
+			const primitiveInfo = VerifpalLib.primitiveInfo(word);
+			const queryInfo = VerifpalLib.queryInfo(word);
 			if (primitiveInfo.length > 0) {
 				return new Promise((resolve) => {
 					resolve(new vscode.Hover([
@@ -32,12 +32,12 @@ export default class HoverProvider {
 					]));
 				});
 			} else {
-				let info = VerifpalLib.constantInfo(word, knowledgeMap);
+				const info = VerifpalLib.constantInfo(word, knowledgeMap);
 				if (!info.Valid) {
 					return;
 				}
 				return VerifpalLib.getPrettyValue(info.Assigned).then((result: string) => {
-					let hoverText = `// Created by ${info.Creator}\n${result}`;
+					const hoverText = `// Created by ${info.Creator}\n${result}`;
 					return new Promise((resolve) => {
 						resolve(new vscode.Hover([
 							"Verifpal: Constant Information", {

@@ -15,21 +15,21 @@ export default class DiagramProvider {
 
 	static renderDiagram(fileName: string, fileContents: string, extensionPath: string) {
 		this.diagramActive = true;
-		let modelName = path.basename(fileName);
+		const modelName = path.basename(fileName);
 		let diagramHtml = fs.readFileSync(
 			path.join(extensionPath, "res", "diagram.html")
 		).toString();
 		VerifpalLib.getPrettyDiagram(fileContents).then((result: string) => {
-			let ep1 = this.webviewPanel.webview.asWebviewUri(vscode.Uri.file(
+			const ep1 = this.webviewPanel.webview.asWebviewUri(vscode.Uri.file(
 				path.join(extensionPath, "res", "webfont.js")
 			));
-			let ep2 = this.webviewPanel.webview.asWebviewUri(vscode.Uri.file(
+			const ep2 = this.webviewPanel.webview.asWebviewUri(vscode.Uri.file(
 				path.join(extensionPath, "res", "snap.svg-min.js")
 			));
-			let ep3 = this.webviewPanel.webview.asWebviewUri(vscode.Uri.file(
+			const ep3 = this.webviewPanel.webview.asWebviewUri(vscode.Uri.file(
 				path.join(extensionPath, "res", "underscore-min.js")
 			));
-			let ep4 = this.webviewPanel.webview.asWebviewUri(vscode.Uri.file(
+			const ep4 = this.webviewPanel.webview.asWebviewUri(vscode.Uri.file(
 				path.join(extensionPath, "res", "sequence-diagram-min.js")
 			));
 			diagramHtml = diagramHtml.replace("$$EXTPATH1$$", ep1);

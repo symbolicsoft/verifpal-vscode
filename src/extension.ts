@@ -27,8 +27,8 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.languages.registerDocumentFormattingEditProvider("verifpal", {
 			provideDocumentFormattingEdits(document: vscode.TextDocument) {
-				let fileContents = document.getText();
-				let fullRange = new vscode.Range(0, 0, document.lineCount, 0);
+				const fileContents = document.getText();
+				const fullRange = new vscode.Range(0, 0, document.lineCount, 0);
 				return VerifpalLib.getPrettyPrint(fileContents).then((result: string) => {
 					const edit = new vscode.WorkspaceEdit();
 					edit.replace(document.uri, fullRange, result);
@@ -40,8 +40,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.commands.registerTextEditorCommand("verifpal.showDiagram", (editor: vscode.TextEditor) => {
-			let fileName = editor.document.fileName;
-			let fileContents = editor.document.getText();
+			const fileName = editor.document.fileName;
+			const fileContents = editor.document.getText();
 			DiagramProvider.webviewPanel = vscode.window.createWebviewPanel(
 				"verifpal",
 				"Verifpal Protocol Diagram",
@@ -58,8 +58,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 	vscode.workspace.onDidSaveTextDocument((document: vscode.TextDocument) => {
 		if (DiagramProvider.diagramActive) {
-			let fileName = document.fileName;
-			let fileContents = document.getText();
+			const fileName = document.fileName;
+			const fileContents = document.getText();
 			DiagramProvider.renderDiagram(fileName, fileContents, context.extensionPath);
 		}
 	});

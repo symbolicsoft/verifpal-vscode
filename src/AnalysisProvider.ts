@@ -22,9 +22,9 @@ export default class AnalysisProvider {
 	static analysisOutput = vscode.window.createOutputChannel("Verifpal Analysis");
 
 	static decorate(editor: vscode.TextEditor, parsedResults) {
-		let fileContents = editor.document.getText();
-		let passedQueries: vscode.DecorationOptions[] = [];
-		let failedQueries: vscode.DecorationOptions[] = [];
+		const fileContents = editor.document.getText();
+		const passedQueries: vscode.DecorationOptions[] = [];
+		const failedQueries: vscode.DecorationOptions[] = [];
 		const fileContentsArray = fileContents.split("\n");
 		for (let i = 0; i < parsedResults.length; i++) {
 			if (parsedResults[i].Resolved) {
@@ -34,11 +34,11 @@ export default class AnalysisProvider {
 		}
 		for (let i = 0; i < parsedResults.length; i++) {
 			for (let line = 0; line < fileContentsArray.length; line++) {
-				let tl = fileContentsArray[line].toLowerCase();
-				let tq = parsedResults[i].Query.toLowerCase();
-				let queryIndex = tl.indexOf(tq);
+				const tl = fileContentsArray[line].toLowerCase();
+				const tq = parsedResults[i].Query.toLowerCase();
+				const queryIndex = tl.indexOf(tq);
 				if (queryIndex >= 0) {
-					let range = new vscode.Range(
+					const range = new vscode.Range(
 						new vscode.Position(line, queryIndex),
 						new vscode.Position(line, queryIndex + tq.length)
 					);
@@ -55,11 +55,11 @@ export default class AnalysisProvider {
 				if (!parsedResults[i].Resolved) {
 					continue;
 				}
-				let constantNames = parsedResults[i].Constants;
+				const constantNames = parsedResults[i].Constants;
 				for (let ii = 0; ii < constantNames.length; ii++) {
-					let constMatch = tl.match(`(\\W)${constantNames[ii]}(\\,|\\]|\\)|\\s|\\^|$)`);
+					const constMatch = tl.match(`(\\W)${constantNames[ii]}(\\,|\\]|\\)|\\s|\\^|$)`);
 					if (constMatch !== null && constMatch.index !== undefined) {
-						let range = new vscode.Range(
+						const range = new vscode.Range(
 							new vscode.Position(line, constMatch.index + 1),
 							new vscode.Position(line, constMatch.index + 1 + constantNames[ii].length)
 						);
@@ -79,7 +79,7 @@ export default class AnalysisProvider {
 			vscode.window.showErrorMessage("Verifpal: Analysis is already running.");
 			return;
 		}
-		let fileContents = editor.document.getText();
+		const fileContents = editor.document.getText();
 		vscode.window.showInformationMessage("Verifpal: Running analysis...");
 		analysisActive = true;
 		return VerifpalLib.getVerify(fileContents).then((result: string) => {
@@ -88,9 +88,9 @@ export default class AnalysisProvider {
 			const verifyResults = JSON.parse(result);
 			const parsedResults: Object[] = [];
 			for (let i = 0; i < verifyResults.length; i++) {
-				let q = JSON.stringify(verifyResults[i].Query);
+				const q = JSON.stringify(verifyResults[i].Query);
 				VerifpalLib.getPrettyQuery(q).then((result: string) => {
-					let constantNames: string[] = [];
+					const constantNames: string[] = [];
 					switch (verifyResults[i].Query.Kind) {
 					case "confidentiality":
 						for (let ii = 0; ii < verifyResults[i].Query.Constants.length; ii++) {
@@ -118,8 +118,8 @@ export default class AnalysisProvider {
 						}
 						break;
 					}
-					let formattedSummary = verifyResults[i].Summary.replace(/\[(\d|;)+m/gm, "");
-					let p = {
+					const formattedSummary = verifyResults[i].Summary.replace(/\[(\d|;)+m/gm, "");
+					const p = {
 						Query: result,
 						Resolved: verifyResults[i].Resolved,
 						Summary: formattedSummary,

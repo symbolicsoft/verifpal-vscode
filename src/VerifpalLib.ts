@@ -57,7 +57,7 @@ export default class VerifpalLib {
 				if (verifpalOutputError) {
 					reject(verifpalOutputError);
 				} else {
-					let result = verifpalOutput;
+					const result = verifpalOutput;
 					resolve(result);
 				}
 			});
@@ -102,13 +102,13 @@ export default class VerifpalLib {
 	}
 
 	static constantInfo = (constantName: string, knowledgeMap) => {
-		let info = {
+		const info = {
 			Creator: "",
 			Assigned: "",
 			KnownBy: "",
 			Valid: false,
 		};
-		let i = VerifpalLib.getKnowledgeMapIndexFromConstant(constantName, knowledgeMap);
+		const i = VerifpalLib.getKnowledgeMapIndexFromConstant(constantName, knowledgeMap);
 		if (i >= 0) {
 			info.Creator = knowledgeMap.Creator[i];
 			info.Assigned = JSON.stringify(knowledgeMap.Assigned[i]) + "\n";
@@ -119,7 +119,7 @@ export default class VerifpalLib {
 	}
 
 	static primitiveInfo = (primitiveName: string) => {
-		let primitives = {
+		const primitives = {
 			"ASSERT": {
 				output: 1,
 				eg: "ASSERT(MAC(key, message), MAC(key, message)): unused",
@@ -227,14 +227,14 @@ export default class VerifpalLib {
 			}
 		};
 		if (({}).hasOwnProperty.call(primitives, primitiveName.toUpperCase())) {
-			let p = primitives[primitiveName.toUpperCase()];
+			const p = primitives[primitiveName.toUpperCase()];
 			return `${p.eg}\n// ${p.help}`;
 		}
 		return "";
 	};
 
 	static queryInfo = (queryName: string) => {
-		let queries = {
+		const queries = {
 			"confidentiality": {
 				eg: "confidentiality? a",
 				help: "Checks whether a given value can be obtained by the attacker.",
@@ -257,7 +257,7 @@ export default class VerifpalLib {
 			}
 		};
 		if (({}).hasOwnProperty.call(queries, queryName.toLowerCase())) {
-			let q = queries[queryName.toLowerCase()];
+			const q = queries[queryName.toLowerCase()];
 			return `${q.eg}\n// ${q.help}`;
 		}
 		return "";
