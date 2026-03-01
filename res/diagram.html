@@ -3,18 +3,18 @@
 
 <head>
 	<meta charset="utf-8">
+	<meta http-equiv="Content-Security-Policy" content="$$CSP$$">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, height=device-height, target-densitydpi=device-dpi">
-	<script src="$$EXTPATH1$$"></script>
-	<script src="$$EXTPATH2$$"></script>
-	<script src="$$EXTPATH3$$"></script>
-	<script src="$$EXTPATH4$$"></script>
-	<script src="$$EXTPATH5$$"></script>
+	<script nonce="$$NONCE$$" src="$$EXTPATH1$$"></script>
+	<script nonce="$$NONCE$$" src="$$EXTPATH2$$"></script>
+	<script nonce="$$NONCE$$" src="$$EXTPATH3$$"></script>
+	<script nonce="$$NONCE$$" src="$$EXTPATH4$$"></script>
 	<style type="text/css">
 		body {
 			padding: 10px;
 			background-color: var(--vscode-editor-selectionHighlightBackground);
 		}
-		
+
 		span#diagramText {
 			display: none;
 		}
@@ -55,7 +55,7 @@
 			fill: var(--vscode-editor-background);
 			stroke: var(--vscode-editor-foreground);
 		}
-		
+
 		.note text,
 		.signal text {
 			fill: var(--vscode-editor-foreground);
@@ -69,7 +69,7 @@
 		$$DIAGRAM$$
 	</span>
 	<div id="diagram"></div>
-	<script>
+	<script nonce="$$NONCE$$">
 		let diagramText = document.getElementById("diagramText").innerText;
 		let diagram = Diagram.parse(diagramText);
 		diagram.drawSVG("diagram", {

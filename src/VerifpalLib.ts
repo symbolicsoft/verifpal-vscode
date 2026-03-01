@@ -1,98 +1,84 @@
-/* SPDX-FileCopyrightText: © 2019-2021 Nadim Kobeissi <nadim@symbolic.software>
+/* SPDX-FileCopyrightText: © 2019-2026 Nadim Kobeissi <nadim@symbolic.software>
  * SPDX-License-Identifier: GPL-3.0-only */
 
-/// <reference path="./cross-spawn.d.ts" />
-import {
-	spawn
-} from "cross-spawn";
-import {
-	configDeterminePath
-} from "./config";
+import { spawn } from "cross-spawn";
+import { configDeterminePath } from "./config";
 
-/*
-type KnowledgeMap struct {
-	Principals []string
-	Constants  []Constant
-	Assigned   []Value
-	Creator    []string
-	KnownBy    [][]map[string]string
-	Phase      [][]int
-	MaxPhase   int
+export interface KnowledgeMapConstant {
+	Name: string;
 }
 
-type PrincipalState struct {
-	Name          string
-	Constants     []Constant
-	Assigned      []Value
-	Guard         []bool
-	Known         []bool
-	Wire          [][]string
-	KnownBy       [][]map[string]string
-	Creator       []string
-	Sender        []string
-	Rewritten     []bool
-	BeforeRewrite []Value
-	Mutated       []bool
-	MutatableTo   [][]string
-	BeforeMutate  []Value
-	Phase         [][]int
-	Lock          int
+export interface KnowledgeMap {
+	Constants: KnowledgeMapConstant[];
+	Creator: string[];
+	Assigned: string[];
+	KnownBy: Record<string, string>[][];
+	Principals: string[];
+	Phase: number[][];
+	MaxPhase: number;
 }
-*/
+
+export interface VerifyResult {
+	Query: string;
+	Resolved: boolean;
+	Summary: string;
+	Constants: string[];
+}
+
+export interface ConstantInfo {
+	Creator: string;
+	Assigned: string;
+	KnownBy: string;
+	Valid: boolean;
+}
 
 export default class VerifpalLib {
 
-	static execVerifpal(fileContents, args) {
+	static execVerifpal(fileContents: string, args: string[]): Promise<string> {
 		return new Promise((resolve, reject) => {
 			let verifpalOutput = "";
 			let verifpalOutputError = "";
 			const verifpalProc = spawn(configDeterminePath(), args);
-			verifpalProc.stdout.on("data", (data) => {
+			verifpalProc.on("error", (err: Error) => {
+				reject(err.message);
+			});
+			verifpalProc.stdout?.on("data", (data: Buffer) => {
 				verifpalOutput += data.toString();
 			});
-			verifpalProc.stderr.on("data", (data) => {
+			verifpalProc.stderr?.on("data", (data: Buffer) => {
 				verifpalOutputError += data.toString();
 			});
 			verifpalProc.on("exit", () => {
 				if (verifpalOutputError) {
 					reject(verifpalOutputError);
 				} else {
-					const result = verifpalOutput;
-					resolve(result);
+					resolve(verifpalOutput);
 				}
 			});
-			verifpalProc.stdin.write(
+			verifpalProc.stdin?.write(
 				`${fileContents}${String.fromCharCode(0x04)}`
 			);
-			verifpalProc.stdin.end();
+			verifpalProc.stdin?.end();
 		});
 	}
 
-	static getKnowledgeMap(fileContents: string) {
+	static getKnowledgeMap(fileContents: string): Promise<string> {
 		return VerifpalLib.execVerifpal(fileContents, ["internal-json", "knowledgeMap"]);
 	}
 
-	static getPrettyValue(fileContents: string) {
-		return VerifpalLib.execVerifpal(fileContents, ["internal-json", "prettyValue"]);
-	}
-
-	static getPrettyQuery(fileContents: string) {
-		return VerifpalLib.execVerifpal(fileContents, ["internal-json", "prettyQuery"]);
-	}
-
-	static getPrettyPrint(fileContents: string) {
+	static getPrettyPrint(fileContents: string): Promise<string> {
 		return VerifpalLib.execVerifpal(fileContents, ["internal-json", "prettyPrint"]);
 	}
 
-	static getPrettyDiagram(fileContents: string) {
+	static getPrettyDiagram(fileContents: string): Promise<string> {
 		return VerifpalLib.execVerifpal(fileContents, ["internal-json", "prettyDiagram"]);
 	}
 
-	static getVerify(fileContents: string) {
+	static getVerify(fileContents: string): Promise<string> {
 		return VerifpalLib.execVerifpal(fileContents, ["internal-json", "verify"]);
 	}
 
-	static getKnowledgeMapIndexFromConstant(constant: string, knowledgeMap) {
+	static getKnowledgeMapIndexFromConstant(constant: string, knowledgeMap: KnowledgeMap): number {
 		for (let i = 0; i < knowledgeMap.Constants.length; i++) {
 			if (knowledgeMap.Constants[i].Name === constant) {
 				return i;
@@ -101,8 +87,8 @@ export default class VerifpalLib {
 		return -1;
 	}
 
-	static constantInfo = (constantName: string, knowledgeMap) => {
-		const info = {
+	static constantInfo(constantName: string, knowledgeMap: KnowledgeMap): ConstantInfo {
+		const info: ConstantInfo = {
 			Creator: "",
 			Assigned: "",
 			KnownBy: "",
@@ -111,15 +97,15 @@ export default class VerifpalLib {
 		const i = VerifpalLib.getKnowledgeMapIndexFromConstant(constantName, knowledgeMap);
 		if (i >= 0) {
 			info.Creator = knowledgeMap.Creator[i];
-			info.Assigned = JSON.stringify(knowledgeMap.Assigned[i]) + "\n";
+			info.Assigned = knowledgeMap.Assigned[i];
 			info.KnownBy = JSON.stringify(knowledgeMap.KnownBy[i]) + "\n";
 			info.Valid = true;
 		}
 		return info;
 	}
 
-	static primitiveInfo = (primitiveName: string) => {
-		const primitives = {
+	static primitiveInfo(primitiveName: string): string {
+		const primitives: Record<string, { output: number; eg: string; help: string }> = {
 			"ASSERT": {
 				output: 1,
 				eg: "ASSERT(MAC(key, message), MAC(key, message)): unused",
@@ -138,7 +124,7 @@ export default class VerifpalLib {
 			"HASH": {
 				output: 1,
 				eg: "HASH(a, b...): x",
-				help: "Secure hash function, similar in practice to, for example, BLAKE2s. Takes an arbitrary number of input arguments ≥ 1, and returns one output."
+				help: "Secure hash function, similar in practice to, for example, BLAKE2s. Takes an arbitrary number of input arguments \u22651, and returns one output."
 			},
 			"MAC": {
 				output: 1,
@@ -148,7 +134,7 @@ export default class VerifpalLib {
 			"HKDF": {
 				output: -1,
 				eg: "HKDF(salt, ikm, info): a, b...",
-				help: "Hash-based key derivation function inspired by the Krawczyk HKDF scheme. Essentially, HKDF is used to extract more than one key out a single secret value. salt and info help contextualize derived keys. Produces an arbitrary number of outputs ≥ 1."
+				help: "Hash-based key derivation function inspired by the Krawczyk HKDF scheme. Essentially, HKDF is used to extract more than one key out a single secret value. salt and info help contextualize derived keys. Produces an arbitrary number of outputs \u22651."
 			},
 			"PW_HASH": {
 				output: 1,
@@ -203,7 +189,7 @@ export default class VerifpalLib {
 			"RINGSIGNVERIF": {
 				output: 1,
 				eg: "RINGSIGNVERIF(G^a, G^b, G^c, m, RINGSIGN(a, G^b, G^c, m)): m",
-				help: "Verifies if a ring signature can be authenticated. The signer’s public key must match one or more of the public keys provided, but the public keys may be provided in any order and not necessarily in the order used during the RINGSIGN operation."
+				help: "Verifies if a ring signature can be authenticated. The signer's public key must match one or more of the public keys provided, but the public keys may be provided in any order and not necessarily in the order used during the RINGSIGN operation."
 			},
 			"BLIND": {
 				output: 1,
@@ -226,15 +212,15 @@ export default class VerifpalLib {
 				help: "Here, sa and sb must be two distinct elements out of the set (s1, s2, s3) in order to obtain k."
 			}
 		};
-		if (({}).hasOwnProperty.call(primitives, primitiveName.toUpperCase())) {
+		if (Object.prototype.hasOwnProperty.call(primitives, primitiveName.toUpperCase())) {
 			const p = primitives[primitiveName.toUpperCase()];
 			return `${p.eg}\n// ${p.help}`;
 		}
 		return "";
-	};
+	}
 
-	static queryInfo = (queryName: string) => {
-		const queries = {
+	static queryInfo(queryName: string): string {
+		const queries: Record<string, { eg: string; help: string }> = {
 			"confidentiality": {
 				eg: "confidentiality? a",
 				help: "Checks whether a given value can be obtained by the attacker.",
@@ -243,9 +229,9 @@ export default class VerifpalLib {
 				eg: "authentication? Alice -> Bob: m",
 				help: "Checks whether Bob will rely on some value m in an important protocol operation (such as signature verification or authenticated decryption) if and only if he received that value from Alice. If Bob is successful in using m for signature verification or a similar operation without it having been necessarily sent by Alice, then authentication is violated for e1, and the attacker was able to impersonate Alice in communicating that value.",
 			},
-			"freshnness": {
+			"freshness": {
 				eg: "freshness? a",
-				help: "Freshness queries are useful for detecting replay attacks, where an attacker could manipulate one message to make it seem valid in two different contexts. In passive attacker mode, a freshness query will check whether a value is “fresh” between sessions (i.e. if it has at least one composing element that is generated, non-static). In active attacker mode, it will check whether a value can be rendered “non-fresh” (i.e. static between sessions) and subsequently successfully used between sessions.",
+				help: "Freshness queries are useful for detecting replay attacks, where an attacker could manipulate one message to make it seem valid in two different contexts. In passive attacker mode, a freshness query will check whether a value is \u201cfresh\u201d between sessions (i.e. if it has at least one composing element that is generated, non-static). In active attacker mode, it will check whether a value can be rendered \u201cnon-fresh\u201d (i.e. static between sessions) and subsequently successfully used between sessions.",
 			},
 			"unlinkability": {
 				eg: "unlinkability? a, b, c",
@@ -256,7 +242,7 @@ export default class VerifpalLib {
 				help: "Checks whether any protocol scenario can be derived such that the given values are not equivalent to one another. This query could be useful for checking if all parties derived the same shared secret, for example."
 			}
 		};
-		if (({}).hasOwnProperty.call(queries, queryName.toLowerCase())) {
+		if (Object.prototype.hasOwnProperty.call(queries, queryName.toLowerCase())) {
 			const q = queries[queryName.toLowerCase()];
 			return `${q.eg}\n// ${q.help}`;
 		}

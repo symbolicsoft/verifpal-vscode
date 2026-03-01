@@ -1,38 +1,34 @@
-/* SPDX-FileCopyrightText: © 2019-2021 Nadim Kobeissi <nadim@symbolic.software>
+/* SPDX-FileCopyrightText: © 2019-2026 Nadim Kobeissi <nadim@symbolic.software>
  * SPDX-License-Identifier: GPL-3.0-only */
 
 import * as vscode from "vscode";
 import VerifpalLib from "./VerifpalLib";
 import HoverProvider from "./HoverProvider";
-import AnalysisProvider from "./AnalysisProvider";
-import DiagramProvider from "./DiagramProvider";
-import {
-	configGetEnabled,
-	configDeterminePath
-} from "./config";
+import { initAnalysisProvider, verify } from "./AnalysisProvider";
+import { createDiagramPanel, isDiagramActive, renderDiagram } from "./DiagramProvider";
+import { configGetEnabled, configDeterminePath } from "./config";
 
-export function activate(context: vscode.ExtensionContext) {
+export function activate(context: vscode.ExtensionContext): void {
 	if (!configGetEnabled()) {
-		return false;
+		return;
 	}
 
+	initAnalysisProvider(context);
+
 	context.subscriptions.push(
-		vscode.languages.registerHoverProvider([{
-			language: "verifpal",
-			scheme: "file",
-			pattern: "**/*vp*"
-		}], new HoverProvider())
+		vscode.languages.registerHoverProvider("verifpal", new HoverProvider())
 	);
 
 	context.subscriptions.push(
 		vscode.languages.registerDocumentFormattingEditProvider("verifpal", {
-			provideDocumentFormattingEdits(document: vscode.TextDocument) {
+			provideDocumentFormattingEdits(document: vscode.TextDocument): Promise<vscode.TextEdit[]> {
 				const fileContents = document.getText();
 				const fullRange = new vscode.Range(0, 0, document.lineCount, 0);
 				return VerifpalLib.getPrettyPrint(fileContents).then((result: string) => {
-					const edit = new vscode.WorkspaceEdit();
-					edit.replace(document.uri, fullRange, result);
-					return vscode.workspace.applyEdit(edit);
+					return [vscode.TextEdit.replace(fullRange, result)];
+				}).catch(() => {
+					vscode.window.showErrorMessage("Verifpal: Formatting failed. Check for syntax errors.");
+					return [];
 				});
 			}
 		})
@@ -40,38 +36,31 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.commands.registerTextEditorCommand("verifpal.showDiagram", (editor: vscode.TextEditor) => {
-			const fileName = editor.document.fileName;
-			const fileContents = editor.document.getText();
-			DiagramProvider.webviewPanel = vscode.window.createWebviewPanel(
-				"verifpal",
-				"Verifpal Protocol Diagram",
-				vscode.ViewColumn.Beside, {
-					enableScripts: true
-				}
-			);
-			DiagramProvider.webviewPanel.onDidDispose(() => {
-				DiagramProvider.diagramActive = false;
-			});
-			DiagramProvider.renderDiagram(fileName, fileContents, context.extensionPath);
+			createDiagramPanel(editor, context.extensionUri);
 		})
 	);
 
-	vscode.workspace.onDidSaveTextDocument((document: vscode.TextDocument) => {
-		if (DiagramProvider.diagramActive) {
-			const fileName = document.fileName;
-			const fileContents = document.getText();
-			DiagramProvider.renderDiagram(fileName, fileContents, context.extensionPath);
-		}
-	});
+	context.subscriptions.push(
+		vscode.workspace.onDidSaveTextDocument((document: vscode.TextDocument) => {
+			if (isDiagramActive()) {
+				const fileName = document.fileName;
+				const fileContents = document.getText();
+				renderDiagram(fileName, fileContents, context.extensionUri);
+			}
+		})
+	);
 
-	const showVerifpalPath = () => {
-		vscode.window.showInformationMessage(
-			`Verifpal path set to '${configDeterminePath()}'`
-		);
-	};
+	context.subscriptions.push(
+		vscode.commands.registerTextEditorCommand("verifpal.verify", verify)
+	);
 
-	vscode.commands.registerTextEditorCommand("verifpal.verify", AnalysisProvider.verify);
-	vscode.commands.registerCommand("verifpal.path", showVerifpalPath);
+	context.subscriptions.push(
+		vscode.commands.registerCommand("verifpal.path", () => {
+			vscode.window.showInformationMessage(
+				`Verifpal path set to '${configDeterminePath()}'`
+			);
+		})
+	);
 }
 
-export function deactivate() {}
+export function deactivate(): void {}
