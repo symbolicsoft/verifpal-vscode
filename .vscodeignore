@@ -1,7 +1,13 @@
 .vscode/**
+.gitlab-ci.yml
 src/**
-**/*.map
-.gitignore
+out/**
+scripts/**
+node_modules/**
+esbuild.js
 tsconfig.json
-vsc-extension-quickstart.md
-img/**
+Makefile
+.gitignore
+.eslintrc.json
+**/*.map
+**/*.ts
