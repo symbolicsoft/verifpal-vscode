@@ -40,14 +40,23 @@ function decorate(editor: vscode.TextEditor, parsedResults: VerifyResult[]): voi
 		}
 	}
 	for (const result of parsedResults) {
+		// Verifpal accepts "→" wherever it accepts "->", but always reports
+		// queries back to us spelled with "->". Match either arrow so that a
+		// model written with the Unicode form still gets decorated. Matching a
+		// pattern rather than a normalized copy of the line keeps the offsets
+		// below in the coordinates of the text actually on screen.
+		const queryPattern = new RegExp(
+			result.Query.toLowerCase()
+				.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+				.replace(/->/g, "(?:->|→)")
+		);
 		for (let line = 0; line < fileContentsArray.length; line++) {
 			const tl = fileContentsArray[line].toLowerCase();
-			const tq = result.Query.toLowerCase();
-			const queryIndex = tl.indexOf(tq);
-			if (queryIndex >= 0) {
+			const queryMatch = tl.match(queryPattern);
+			if (queryMatch !== null && queryMatch.index !== undefined) {
 				const range = new vscode.Range(
-					new vscode.Position(line, queryIndex),
-					new vscode.Position(line, queryIndex + tq.length)
+					new vscode.Position(line, queryMatch.index),
+					new vscode.Position(line, queryMatch.index + queryMatch[0].length)
 				);
 				if (result.Resolved) {
 					failedQueries.push({ range });
@@ -59,7 +68,7 @@ function decorate(editor: vscode.TextEditor, parsedResults: VerifyResult[]): voi
 				continue;
 			}
 			for (const constantName of result.Constants) {
-				const constMatch = tl.match(new RegExp(`(\\W)${constantName}(,|\\]|\\)|\\s|\\^|$)`));
+				const constMatch = tl.match(new RegExp(`(\\W)${constantName}(,|\\]|\\)|\\s|$)`));
 				if (constMatch !== null && constMatch.index !== undefined) {
 					const range = new vscode.Range(
 						new vscode.Position(line, constMatch.index + 1),

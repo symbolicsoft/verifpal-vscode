@@ -107,7 +107,7 @@ contexts [] {
             styles []    = .punctuation;
          }
          : pattern {
-            regex          \= (PW_HASH|HASH|HKDF|AEAD_ENC|AEAD_DEC|ENC|DEC|ASSERT|CONCAT|SPLIT|MAC|SIGNVERIF|SIGN|PKE_ENC|PKE_DEC|SHAMIR_SPLIT|SHAMIR_JOIN|G|nil|_)
+            regex          \= (UNBLIND|BLIND|RINGSIGNVERIF|RINGSIGN|KEM_ENCAP|KEM_DECAP|PW_HASH|HASH|HKDF|AEAD_ENC|AEAD_DEC|ENC|DEC|ASSERT|CONCAT|SPLIT|MAC|SIGNVERIF|SIGN|PKE_ENC|PKE_DEC|PUBKEY|DH_KEX|KEM_ENCAP|KEM_DECAP|SHAMIR_SPLIT|SHAMIR_JOIN|nil|_)
             styles []       = .function;
          }
          : pattern {
@@ -117,15 +117,15 @@ contexts [] {
          : include "main";
       }
       : pattern {
-         regex          \= (\(|\)|\[|\]|\:|\,|\^|\=|(\-\>))
+         regex          \= (\(|\)|\[|\]|\:|\,|\=|(\-\>)|(→))
          styles []       = .punctuation;
       }
       : pattern {
-         regex          \= (confidentiality\?|authentication\?|freshness\?|unlinkability\?equivalence\?)
+         regex          \= (confidentiality\?|authentication\?|freshness\?|unlinkability\?|equivalence\?)
          styles []       = .keyword;
       }
       : pattern {
-         regex          \= (UNBLIND|BLIND|RINGSIGNVERIF|RINGSIGN|PW_HASH|HASH|HKDF|AEAD_ENC|AEAD_DEC|ENC|DEC|ASSERT|CONCAT|SPLIT|MAC|SIGNVERIF|SIGN|PKE_ENC|PKE_DEC|SHAMIR_SPLIT|SHAMIR_JOIN|G|nil|_)
+         regex          \= (UNBLIND|BLIND|RINGSIGNVERIF|RINGSIGN|KEM_ENCAP|KEM_DECAP|PW_HASH|HASH|HKDF|AEAD_ENC|AEAD_DEC|ENC|DEC|ASSERT|CONCAT|SPLIT|MAC|SIGNVERIF|SIGN|PKE_ENC|PKE_DEC|PUBKEY|DH_KEX|KEM_ENCAP|KEM_DECAP|SHAMIR_SPLIT|SHAMIR_JOIN|nil|_)
          styles []       = .function;
       }
       : inline_push {
@@ -144,8 +144,8 @@ contexts [] {
       : inline_push {
          regex          \= (((confidentiality)|(authentication)|(freshness)|(unlinkability)|(equivalence))\?)
          styles []       = .keyword;
-         : pop {  
-            regex       \= (\s\-\>\s)
+         : pop {
+            regex       \= (\s(\-\>|→)\s)
             styles []    = .punctuation;
          }
          : pattern {
@@ -162,7 +162,7 @@ contexts [] {
             styles []    = .entity;
          }
          : pattern {
-            regex          \= (\s\-\>\s)
+            regex          \= (\s(\-\>|→)\s)
             styles []       = .punctuation;
          }
          : include "main";
@@ -170,6 +170,15 @@ contexts [] {
       : pattern {
          regex          \= (//.*)
          styles []       = .comment;
+      }
+      : inline_push {
+         regex          \= (/\*)
+         styles []       = .comment;
+         default_style   = .comment
+         : pop {
+            regex       \= (\*/)
+            styles []    = .comment;
+         }
       }
    }
 }

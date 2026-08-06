@@ -1,9 +1,19 @@
 <!---
-# SPDX-FileCopyrightText: © 2019-2021 Nadim Kobeissi <nadim@symbolic.software>
+# SPDX-FileCopyrightText: © 2019-2026 Nadim Kobeissi <nadim@symbolic.software>
 # SPDX-License-Identifier: CC-BY-SA-4.0
 -->
 
 # Change Log
+
+## 1.0.10
+
+- Update syntax highlighting for Verifpal 0.61.0, which removes Diffie-Hellman equations: the `^` operator is gone, and `PUBKEY` and `DH_KEX` are now highlighted as primitives.
+- Add syntax highlighting and hover documentation for the `KEM_ENCAP` and `KEM_DECAP` primitives, which were previously unsupported by this extension.
+- Update hover documentation for `PUBKEY` and `DH_KEX`, and for the primitives that take a public key (`SIGNVERIF`, `PKE_ENC`, `RINGSIGN`, `RINGSIGNVERIF`).
+- Add syntax highlighting for `/* */` block comments, which Verifpal has long accepted and preserves when formatting.
+- Add syntax highlighting for `→`, which Verifpal accepts in place of `->`, and decorate analysis results on messages and queries written with it.
+- Fix `equivalence?` not being highlighted as a query keyword, and `BLIND`, `UNBLIND`, `RINGSIGN` and `RINGSIGNVERIF` not being highlighted when nested inside another primitive's arguments.
+- Add hover documentation for the `precondition` query option, correct the documented argument and output counts for `CONCAT`, `SPLIT`, `HASH`, `HKDF` and `PW_HASH`, and note which primitives accept the `?` suffix.
 
 ## 1.0.9
 

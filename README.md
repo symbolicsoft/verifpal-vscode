@@ -1,5 +1,5 @@
 <!---
-# SPDX-FileCopyrightText: © 2019-2021 Nadim Kobeissi <nadim@symbolic.software>
+# SPDX-FileCopyrightText: © 2019-2026 Nadim Kobeissi <nadim@symbolic.software>
 # SPDX-License-Identifier: CC-BY-SA-4.0
 -->
 
@@ -8,7 +8,7 @@
 [![](https://img.youtube.com/vi/it_hJkVU-UA/0.jpg)](http://www.youtube.com/watch?v=it_hJkVU-UA "Verifpal for Visual Studio Code")
 
 ## What is Verifpal for Visual Studio Code?
-Verifpal for Visual Studio Code is an extension that provides IDE features for the [Verifpal](https://verifpal.com) protocol modeling and analysis software within the popular Microsoft [Visual Studio Code](https://code.visualstudio.com/) editor. It is an official extension that is developed and maintained by the Verifpal project. **Verifpal for Visual Studio Code requires Verifpal 0.13.0 or higher to be installed for all functionality to work correctly.**
+Verifpal for Visual Studio Code is an extension that provides IDE features for the [Verifpal](https://verifpal.com) protocol modeling and analysis software within the popular Microsoft [Visual Studio Code](https://code.visualstudio.com/) editor. It is an official extension that is developed and maintained by the Verifpal project. **Verifpal for Visual Studio Code requires Verifpal 0.61.0 or higher to be installed for all functionality to work correctly.** Verifpal 0.61.0 removed Diffie-Hellman equations from the language, replacing `G^a` with `PUBKEY(a)` and `ga^b` with `DH_KEX(ga, b)`; this extension highlights and documents the current syntax only.
 
 **Features**
 
@@ -34,7 +34,7 @@ Verifpal for Visual Studio Code may be configured via the following options in y
 - `verifpal.enabled`: enables or disables IDE features. (eg. `true`)
 - `verifpal.path`: Sets the path for the Verifpal binary on your computer. (eg. `/usr/local/bin/verifpal`)
 
-**Note**: If you have installed Verifpal via the Snap Store, you will need to set `verifpal.path` to `/snap/verifpal/current/bin/verifpal`.
+**Note**: If `verifpal.path` is left empty, the extension invokes `verifpal` from your `PATH`. Set it explicitly if you have installed Verifpal somewhere that your editor's environment does not search.
 
 ## Discussion
 Sign up to the [Verifpal Mailing List](https://lists.symbolic.software/mailman/listinfo/verifpal) to stay informed on the latest news and announcements regarding Verifpal, and to participate in Verifpal discussions.
@@ -42,4 +42,4 @@ Sign up to the [Verifpal Mailing List](https://lists.symbolic.software/mailman/l
 ## License
 Verifpal and Verifpal for Visual Studio Code are published by Symbolic Software. They are provided as free and open source software, licensed under the [GNU General Public License, version 3](https://www.gnu.org/licenses/gpl-3.0.en.html). The Verifpal User Manual is provided under the [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)](https://creativecommons.org/licenses/by-nc-nd/4.0/) license.
 
-© Copyright 2019-2021 Nadim Kobeissi. All Rights Reserved. “Verifpal” and the “Verifpal” logo/mascot are registered trademarks of Nadim Kobeissi.
+© Copyright 2019-2026 Nadim Kobeissi. All Rights Reserved. “Verifpal” and the “Verifpal” logo/mascot are registered trademarks of Nadim Kobeissi.

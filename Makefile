@@ -1,15 +1,18 @@
-# SPDX-FileCopyrightText: © 2019-2020 Nadim Kobeissi <nadim@symbolic.software>
+# SPDX-FileCopyrightText: © 2019-2026 Nadim Kobeissi <nadim@symbolic.software>
 # SPDX-License-Identifier: GPL-3.0-only
 
 dependencies:
-	@npm install -g eslint typescript
-	@npm install
+	@npm ci
 
 clean:
-	@$(RM) -rf out
+	@$(RM) -rf dist out
+
+build:
+	@npm run package
 
 lint:
-	@eslint src/*
+	@npm run lint
+	@npm run check-types
 
 publish:
 	@vsce publish -p "${GITLAB_VSCE_PAN}"
@@ -17,4 +20,4 @@ publish:
 tag:
 	@scripts/tag.sh
 
-.PHONY: dependencies clean lint publish tag .vscode node_modules out scripts src syntax
+.PHONY: dependencies clean build lint publish tag
