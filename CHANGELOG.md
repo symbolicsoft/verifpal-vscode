@@ -5,7 +5,7 @@
 
 # Change Log
 
-## 1.0.10
+## 1.0.11
 
 - Update syntax highlighting for Verifpal 0.61.0, which removes Diffie-Hellman equations: the `^` operator is gone, and `PUBKEY` and `DH_KEX` are now highlighted as primitives.
 - Add syntax highlighting and hover documentation for the `KEM_ENCAP` and `KEM_DECAP` primitives, which were previously unsupported by this extension.
