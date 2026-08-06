@@ -8,7 +8,7 @@
 [![](https://img.youtube.com/vi/it_hJkVU-UA/0.jpg)](http://www.youtube.com/watch?v=it_hJkVU-UA "Verifpal for Visual Studio Code")
 
 ## What is Verifpal for Visual Studio Code?
-Verifpal for Visual Studio Code is an extension that provides IDE features for the [Verifpal](https://verifpal.com) protocol modeling and analysis software within the popular Microsoft [Visual Studio Code](https://code.visualstudio.com/) editor. It is an official extension that is developed and maintained by the Verifpal project. **Verifpal for Visual Studio Code requires Verifpal 0.61.0 or higher to be installed for all functionality to work correctly.** Verifpal 0.61.0 removed Diffie-Hellman equations from the language, replacing `G^a` with `PUBKEY(a)` and `ga^b` with `DH_KEX(ga, b)`; this extension highlights and documents the current syntax only.
+Verifpal for Visual Studio Code is an extension that provides IDE features for the [Verifpal](https://verifpal.com) protocol modeling and analysis software within the popular Microsoft [Visual Studio Code](https://code.visualstudio.com/) editor. It is an official extension that is developed and maintained by the Verifpal project. **Verifpal for Visual Studio Code requires Verifpal 0.61.0 or higher to be installed for all functionality to work correctly.** Verifpal 0.61.0 removed Diffie-Hellman equations from the language, replacing `G^a` with `PUBKEY(a)` and `ga^b` with `DH_KEX(ga, b)`; this extension highlights and documents the current syntax only. Declared weakening assumptions such as `SIGN[forgeable](sk, m)` are highlighted and documented at any version, but reporting them alongside analysis results requires Verifpal 0.70.0 or higher.
 
 **Features**
 
@@ -23,7 +23,7 @@ To install Verifpal for Visual Studio Code, simply search for it within the exte
 
 Syntax highlighting will be available immediately on `.vp` files. To format a model, simply right-click within the editor and select _"Format Document"_.
 
-Hovering over primitives (such as `HKDF` or `AEAD_ENC`) will show documentation for these primitives. Hovering over constants will show their assigned values and the name of the principal that created them. Hovering over queries (such as `confidentiality`) will show a brief description of that query's syntax and functionality.
+Hovering over primitives (such as `HKDF` or `AEAD_ENC`) will show documentation for these primitives. Hovering over constants will show their assigned values and the name of the principal that created them. Hovering over queries (such as `confidentiality`) will show a brief description of that query's syntax and functionality. Hovering over a weakening assumption (`weak`, `forgeable`, `malleable`) will explain what it grants the attacker and which primitives accept it.
 
 In order to show a diagram visualizing your protocol, open the Visual Studio Code Command Palette (`Ctrl+Shift+P` on Windows and Linux, `⌘+Shift+P` on macOS) and search for the _"Verifpal: Show Protocol Diagram"_ command.
 
