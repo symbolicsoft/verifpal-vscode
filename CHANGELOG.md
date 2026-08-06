@@ -5,6 +5,12 @@
 
 # Change Log
 
+## 1.0.12
+
+- Add syntax highlighting and hover documentation for declared weakening assumptions, the per-call-site annotation introduced in Verifpal 0.70.0: `SIGN[forgeable](sk, m)`, `PUBKEY[weak](a)`, `AEAD_ENC[weak from phase 2](k, m, ad)`. `from` and `phase` are highlighted only when they follow a capability, since neither is a reserved constant name.
+- Surface those assumptions in the analysis results. Verifpal's `internal-json` verify payload gained an `Assumptions` key on each result; the extension now lists them in the Verifpal Analysis output pane and warns that results hold only under them. An attack found under a declared assumption is genuine only under that assumption, and a passing result is conditional on it, so neither should be read as unconditional.
+- Correct the documented output of `SIGNVERIF` and `RINGSIGNVERIF` from `message` to `verified`. A successful verification yields a verification token rather than the message, and the primary purpose of both is use as a checked primitive.
+
 ## 1.0.11
 
 - Update syntax highlighting for Verifpal 0.61.0, which removes Diffie-Hellman equations: the `^` operator is gone, and `PUBKEY` and `DH_KEX` are now highlighted as primitives.

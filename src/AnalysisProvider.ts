@@ -2,8 +2,8 @@
  * SPDX-License-Identifier: GPL-3.0-only */
 
 import * as vscode from "vscode";
-import VerifpalLib from "./VerifpalLib";
-import type { VerifyResult } from "./VerifpalLib";
+import VerifpalLib, { describeAssumption } from "./VerifpalLib";
+import type { Assumption, VerifyResult } from "./VerifpalLib";
 
 let analysisActive = false;
 
@@ -24,6 +24,43 @@ export function initAnalysisProvider(context: vscode.ExtensionContext): void {
 	});
 	analysisOutput = vscode.window.createOutputChannel("Verifpal Analysis");
 	context.subscriptions.push(greenDecoration, redDecoration, analysisOutput);
+}
+
+/**
+ * Every assumption declared in the model. Verifpal repeats the same list on
+ * each result, so any one of them will do; take the first non-empty one.
+ */
+function collectAssumptions(parsedResults: VerifyResult[]): Assumption[] {
+	for (const result of parsedResults) {
+		if (result.Assumptions && result.Assumptions.length > 0) {
+			return result.Assumptions;
+		}
+	}
+	return [];
+}
+
+/**
+ * A model that declares a weakening assumption is not being analyzed on its
+ * own terms: an attack found under one is genuine only under that assumption,
+ * and a clean result is conditional on it. Report them either way, so that
+ * "Analysis complete" never reads as unconditional.
+ */
+function reportAssumptions(assumptions: Assumption[]): void {
+	if (assumptions.length === 0) {
+		return;
+	}
+	const plural = assumptions.length === 1 ? "" : "s";
+	analysisOutput.appendLine(
+		`Analysis performed under ${assumptions.length} declared weakening assumption${plural}:`
+	);
+	for (const assumption of assumptions) {
+		analysisOutput.appendLine(`  ${describeAssumption(assumption)}`);
+	}
+	analysisOutput.appendLine("");
+	vscode.window.showWarningMessage(
+		`Verifpal: Results hold only under ${assumptions.length} declared weakening assumption${plural}. ` +
+		"Check the Verifpal Analysis output pane for the list."
+	);
 }
 
 function decorate(editor: vscode.TextEditor, parsedResults: VerifyResult[]): void {
@@ -99,9 +136,11 @@ export function verify(editor: vscode.TextEditor): void {
 			Query: r.Query,
 			Resolved: r.Resolved,
 			Summary: r.Summary.replace(/\[(\d|;)+m/gm, ""),
-			Constants: r.Constants
+			Constants: r.Constants,
+			Assumptions: r.Assumptions ?? []
 		}));
 		vscode.window.showInformationMessage("Verifpal: Analysis complete.");
+		reportAssumptions(collectAssumptions(parsedResults));
 		decorate(editor, parsedResults);
 	}).catch(() => {
 		analysisActive = false;

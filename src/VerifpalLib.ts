@@ -18,11 +18,33 @@ export interface KnowledgeMap {
 	MaxPhase: number;
 }
 
+/**
+ * A weakening assumption the model declared on one primitive call site, such
+ * as `SIGN[forgeable](sk, m)` or `AEAD_ENC[weak from phase 2](k, m, ad)`.
+ * `FromPhase` is 0 unless the assumption was delayed with `from phase N`.
+ */
+export interface Assumption {
+	Term: string;
+	Capability: string;
+	FromPhase: number;
+}
+
 export interface VerifyResult {
 	Query: string;
 	Resolved: boolean;
 	Summary: string;
 	Constants: string[];
+	/**
+	 * Every assumption declared anywhere in the model, repeated on each
+	 * result. Older Verifpal releases omit the key entirely, so treat it as
+	 * optional and default to an empty list.
+	 */
+	Assumptions?: Assumption[];
+}
+
+export function describeAssumption(a: Assumption): string {
+	const when = a.FromPhase > 0 ? ` from phase ${a.FromPhase}` : "";
+	return `${a.Term} — ${a.Capability}${when}`;
 }
 
 export interface ConstantInfo {
@@ -198,7 +220,7 @@ export default class VerifpalLib {
 			},
 			"SIGNVERIF": {
 				output: 1,
-				eg: "SIGNVERIF(PUBKEY(key), message, SIGN(key, message)): message",
+				eg: "SIGNVERIF(PUBKEY(key), message, SIGN(key, message)): verified",
 				help: "Verifies if signature can be authenticated. If key a was used for SIGN, then SIGNVERIF will expect `PUBKEY(a)` as the key value. May be suffixed with `?` to halt the principal if verification fails."
 			},
 			"RINGSIGN": {
@@ -208,7 +230,7 @@ export default class VerifpalLib {
 			},
 			"RINGSIGNVERIF": {
 				output: 1,
-				eg: "RINGSIGNVERIF(PUBKEY(a), PUBKEY(b), PUBKEY(c), m, RINGSIGN(a, PUBKEY(b), PUBKEY(c), m)): m",
+				eg: "RINGSIGNVERIF(PUBKEY(a), PUBKEY(b), PUBKEY(c), m, RINGSIGN(a, PUBKEY(b), PUBKEY(c), m)): verified",
 				help: "Verifies if a ring signature can be authenticated. The signer's public key must match one or more of the public keys provided, but the public keys may be provided in any order and not necessarily in the order used during the RINGSIGN operation. May be suffixed with `?` to halt the principal if verification fails."
 			},
 			"BLIND": {
@@ -235,6 +257,32 @@ export default class VerifpalLib {
 		if (Object.prototype.hasOwnProperty.call(primitives, primitiveName.toUpperCase())) {
 			const p = primitives[primitiveName.toUpperCase()];
 			return `${p.eg}\n// ${p.help}`;
+		}
+		return "";
+	}
+
+	static capabilityInfo(capabilityName: string): string {
+		const capabilities: Record<string, { eg: string; help: string }> = {
+			"weak": {
+				eg: "AEAD_ENC[weak](key, plaintext, ad)",
+				help: "Declared weakening assumption: this primitive loses confidentiality, so holding the term is enough to recover what it protects. Declared for HASH and PW_HASH (a preimage, recovering every argument), AEAD_ENC, ENC and PKE_ENC (the plaintext), KEM_ENCAP (the shared secret), and PUBKEY (the private key, which is the discrete logarithm problem falling and makes every DH_KEX built on that key computable). Append `from phase N` to delay it."
+			},
+			"forgeable": {
+				eg: "SIGN[forgeable](private_key, message)",
+				help: "Declared weakening assumption: this primitive loses authenticity, so the term becomes constructible without its secret argument. Declared for SIGN, MAC, RINGSIGN and AEAD_ENC. Kept separate from `weak` so that AEAD_ENC[forgeable] can say the attacker may manufacture a ciphertext the recipient accepts while still being unable to read yours. Append `from phase N` to delay it."
+			},
+			"malleable": {
+				eg: "ENC[malleable](key, plaintext)",
+				help: "Reserved for the ability to retarget a ciphertext the attacker already holds, which is the symbolic shape of a bit-flipping attack against unauthenticated encryption. No primitive currently declares it, and Verifpal rejects it rather than accepting an assumption it would silently ignore."
+			},
+			"from": {
+				eg: "PUBKEY[weak from phase 1](private_key)",
+				help: "Delays a weakening assumption: it is not in force until the named phase, and holds from there onward. Cryptanalysis does not un-happen, which is why this reads `from` a phase rather than `in` one. A capability that arrives later than the message it would act on is no capability at all, since phases still govern when a value may be substituted."
+			}
+		};
+		if (Object.prototype.hasOwnProperty.call(capabilities, capabilityName.toLowerCase())) {
+			const c = capabilities[capabilityName.toLowerCase()];
+			return `${c.eg}\n// ${c.help}`;
 		}
 		return "";
 	}

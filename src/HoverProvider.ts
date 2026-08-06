@@ -17,10 +17,16 @@ export default class HoverProvider implements vscode.HoverProvider {
 			const knowledgeMap: KnowledgeMap = JSON.parse(result);
 			const primitiveInfo = VerifpalLib.primitiveInfo(word);
 			const queryInfo = VerifpalLib.queryInfo(word);
+			const capabilityInfo = VerifpalLib.capabilityInfo(word);
 			if (primitiveInfo.length > 0) {
 				return new vscode.Hover([
 					"Verifpal: Primitive Documentation",
 					{ language: "verifpal", value: primitiveInfo }
+				]);
+			} else if (capabilityInfo.length > 0) {
+				return new vscode.Hover([
+					"Verifpal: Weakening Assumption Documentation",
+					{ language: "verifpal", value: capabilityInfo }
 				]);
 			} else if (queryInfo.length > 0) {
 				return new vscode.Hover([

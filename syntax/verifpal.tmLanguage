@@ -214,6 +214,33 @@
         </dict>
         <dict>
           <key>match</key>
+          <string>\b(weak|forgeable|malleable)\b(\s+(from)\s+(phase)\s+([0-9]+))?</string>
+          <key>captures</key>
+          <dict>
+            <key>1</key>
+            <dict>
+              <key>name</key>
+              <string>keyword.verifpal</string>
+            </dict>
+            <key>3</key>
+            <dict>
+              <key>name</key>
+              <string>keyword.verifpal</string>
+            </dict>
+            <key>4</key>
+            <dict>
+              <key>name</key>
+              <string>keyword.verifpal</string>
+            </dict>
+            <key>5</key>
+            <dict>
+              <key>name</key>
+              <string>constant.character.verifpal</string>
+            </dict>
+          </dict>
+        </dict>
+        <dict>
+          <key>match</key>
           <string>(UNBLIND|BLIND|RINGSIGNVERIF|RINGSIGN|KEM_ENCAP|KEM_DECAP|PW_HASH|HASH|HKDF|AEAD_ENC|AEAD_DEC|ENC|DEC|ASSERT|CONCAT|SPLIT|MAC|SIGNVERIF|SIGN|PKE_ENC|PKE_DEC|PUBKEY|DH_KEX|KEM_ENCAP|KEM_DECAP|SHAMIR_SPLIT|SHAMIR_JOIN|nil|_)</string>
           <key>name</key>
           <string>support.function.verifpal</string>

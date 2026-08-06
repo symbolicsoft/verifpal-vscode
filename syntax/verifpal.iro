@@ -124,6 +124,14 @@ contexts [] {
          regex          \= (confidentiality\?|authentication\?|freshness\?|unlinkability\?|equivalence\?)
          styles []       = .keyword;
       }
+      // Declared weakening assumptions, e.g. SIGN[forgeable](sk, m) or
+      // AEAD_ENC[weak from phase 2](k, m, ad). `from` and `phase` are only
+      // styled when they follow a capability, since both are ordinary words
+      // elsewhere and neither is a reserved constant name.
+      : pattern {
+         regex          \= \b(weak|forgeable|malleable)\b(\s+(from)\s+(phase)\s+([0-9]+))?
+         styles []       = .keyword, .keyword, .keyword, .keyword, .constant;
+      }
       : pattern {
          regex          \= (UNBLIND|BLIND|RINGSIGNVERIF|RINGSIGN|KEM_ENCAP|KEM_DECAP|PW_HASH|HASH|HKDF|AEAD_ENC|AEAD_DEC|ENC|DEC|ASSERT|CONCAT|SPLIT|MAC|SIGNVERIF|SIGN|PKE_ENC|PKE_DEC|PUBKEY|DH_KEX|KEM_ENCAP|KEM_DECAP|SHAMIR_SPLIT|SHAMIR_JOIN|nil|_)
          styles []       = .function;
