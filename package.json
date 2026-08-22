@@ -1,7 +1,7 @@
 {
 	"name": "verifpal",
 	"displayName": "Verifpal",
-	"version": "1.1.0",
+	"version": "2.0.0",
 	"publisher": "symbolicsoft",
 	"description": "Verifpal language support.",
 	"author": {
@@ -10,7 +10,7 @@
 	},
 	"license": "GPL-3.0-only",
 	"engines": {
-		"vscode": "^1.75.0"
+		"vscode": "^1.82.0"
 	},
 	"categories": [
 		"Programming Languages",
@@ -41,7 +41,7 @@
 	"capabilities": {
 		"untrustedWorkspaces": {
 			"supported": "limited",
-			"description": "Verifpal analyses models by running the Verifpal binary. In an untrusted workspace, the binary is taken from your user settings or your PATH: a workspace-level 'verifpal.path' is ignored, so that opening an untrusted repository cannot cause an arbitrary executable to be run.",
+			"description": "Verifpal provides IDE features by running the Verifpal binary as a language server. In an untrusted workspace, the binary is taken from your user settings or your PATH: a workspace-level 'verifpal.path' is ignored, so that opening an untrusted repository cannot cause an arbitrary executable to be run.",
 			"restrictedConfigurations": [
 				"verifpal.path"
 			]
@@ -82,6 +82,11 @@
 				"icon": "$(shield)"
 			},
 			{
+				"command": "verifpal.cancel",
+				"title": "Cancel Attacker Analysis",
+				"category": "Verifpal"
+			},
+			{
 				"command": "verifpal.showDiagram",
 				"title": "Show Protocol Diagram",
 				"category": "Verifpal",
@@ -98,6 +103,11 @@
 				"category": "Verifpal"
 			},
 			{
+				"command": "verifpal.restart",
+				"title": "Restart Language Server",
+				"category": "Verifpal"
+			},
+			{
 				"command": "verifpal.path",
 				"title": "Show Path to Verifpal",
 				"category": "Verifpal"
@@ -107,6 +117,10 @@
 			"commandPalette": [
 				{
 					"command": "verifpal.verify",
+					"when": "editorLangId == verifpal"
+				},
+				{
+					"command": "verifpal.cancel",
 					"when": "editorLangId == verifpal"
 				},
 				{
@@ -156,23 +170,77 @@
 				"verifpal.path": {
 					"type": "string",
 					"default": "",
-					"markdownDescription": "Path to the Verifpal binary. Leave empty to use `verifpal` from your `PATH`. Ignored in an untrusted workspace.",
+					"markdownDescription": "Path to the Verifpal binary, which is also the language server (`verifpal lsp`). Leave empty to use `verifpal` from your `PATH`. Requires Verifpal 1.1 or newer. Ignored in an untrusted workspace.",
 					"scope": "machine-overridable"
 				},
 				"verifpal.validateOnType": {
 					"type": "boolean",
 					"default": true,
-					"description": "Check models for parse and sanity errors as you type, and report them in the Problems panel. Disable to check only on save.",
-					"scope": "window"
+					"scope": "window",
+					"description": "Check models for parse and sanity errors as you type, and report them in the Problems panel. Disable to check only on save."
 				},
 				"verifpal.analyzeOnSave": {
 					"type": "boolean",
 					"default": false,
 					"description": "Run a full attacker analysis every time a model is saved. Off by default: analysis of a large model can take a long time.",
 					"scope": "window"
+				},
+				"verifpal.sessions": {
+					"type": [
+						"number",
+						"null"
+					],
+					"default": null,
+					"scope": "window",
+					"minimum": 1,
+					"maximum": 16,
+					"markdownDescription": "Sessions per principal for the attacker analysis. Leave unset to use Verifpal's own default of 2. Session replication costs roughly four times the work; `1` is the escape hatch for a model too large to afford it."
+				},
+				"verifpal.diagnostics.passing": {
+					"type": "boolean",
+					"default": true,
+					"scope": "window",
+					"description": "Also mark queries that hold, as informational entries in the Problems panel."
+				},
+				"verifpal.inlayHints.argumentNames": {
+					"type": "boolean",
+					"default": true,
+					"scope": "window",
+					"description": "Show primitive argument names inline at call sites."
+				},
+				"verifpal.codeLens": {
+					"type": "boolean",
+					"default": true,
+					"scope": "window",
+					"description": "Show a 'Run attacker analysis' action above the queries block."
 				}
 			}
-		}
+		},
+		"semanticTokenScopes": [
+			{
+				"language": "verifpal",
+				"scopes": {
+					"namespace": [
+						"entity.name.type.verifpal"
+					],
+					"variable.declaration": [
+						"variable.other.definition.verifpal"
+					],
+					"function.defaultLibrary": [
+						"support.function.verifpal"
+					],
+					"decorator": [
+						"storage.modifier.verifpal"
+					],
+					"type": [
+						"keyword.other.query.verifpal"
+					],
+					"parameter": [
+						"storage.type.verifpal"
+					]
+				}
+			}
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run package",
@@ -180,20 +248,18 @@
 		"watch": "node esbuild.js --watch",
 		"package": "node esbuild.js --production",
 		"check-types": "tsc --noEmit",
-		"lint": "eslint .",
-		"pretest": "tsc -p tsconfig.test.json",
-		"test": "node --test out/*.test.js"
+		"lint": "eslint ."
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.39.5",
-		"@types/node": "^20.0.0",
-		"@types/vscode": "~1.75.0",
+		"@types/vscode": "~1.82.0",
 		"esbuild": "^0.28.2",
 		"eslint": "^9.39.5",
 		"typescript": "^5.7.0",
-		"typescript-eslint": "^8.67.0"
+		"typescript-eslint": "^8.67.0",
+		"@types/node": "^20.0.0"
 	},
 	"dependencies": {
-		"cross-spawn": "^7.0.6"
+		"vscode-languageclient": "^9.0.1"
 	}
 }

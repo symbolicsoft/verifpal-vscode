@@ -1,8 +1,0 @@
-{
-	"extends": "./tsconfig.json",
-	"compilerOptions": {
-		"noEmit": false,
-		"outDir": "out"
-	},
-	"include": ["src/spec.ts", "src/parse.ts", "src/*.test.ts"]
-}

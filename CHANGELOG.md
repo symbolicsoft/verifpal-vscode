@@ -5,6 +5,46 @@
 
 # Change Log
 
+## 2.0.0
+
+The extension is now a client of `verifpal lsp`, the language server built
+into the Verifpal binary. **Requires Verifpal 1.1 or newer and Visual Studio
+Code 1.82 or newer.**
+
+Roughly 2,500 lines were deleted: a scanner for the Verifpal language, a copy
+of the engine's primitive and capability tables, and a hand-rolled process
+layer speaking the removed `internal-json` interface. Everything they did is
+now answered by the engine itself, which means it cannot drift.
+
+### Added
+
+- Go to Definition, Find All References, Rename Symbol and document highlights
+  for constants and principals.
+- Semantic-token highlighting, refined by the parser rather than by a regex.
+- Folding from the model's real structure, so a guarded value and a capability
+  parameter create no folds.
+- Inlay hints naming each primitive argument at its call site.
+- A "Run attacker analysis" code lens above the queries block.
+- `Verifpal: Cancel Attacker Analysis` and `Verifpal: Restart Language Server`.
+- `verifpal.sessions`, `verifpal.diagnostics.passing`,
+  `verifpal.inlayHints.argumentNames` and `verifpal.codeLens`.
+
+### Changed
+
+- Diagnostics now carry the engine's own notes and secondary locations: a
+  rebound constant points at both of its assignments.
+- Analysis results are discarded when the document they describe has changed,
+  rather than lingering over edited text.
+- Hover over a constant now also reports the phases it appears in.
+
+### Removed
+
+- The `internal-json` interface, which Verifpal no longer provides.
+- The `cross-spawn` dependency.
+- The extension's unit tests, which existed to catch the deleted language
+  tables drifting from the engine.
+
+
 ## 1.1.0
 
 **Correctness**

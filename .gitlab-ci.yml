@@ -8,7 +8,6 @@ check:
   script:
     - make dependencies
     - make lint
-    - make test
 
 publish:
   image: node:latest
@@ -18,6 +17,5 @@ publish:
   script:
     - make dependencies
     - make lint
-    - make test
     - npm install -g vsce
     - vsce publish -p "${GITLAB_VSCE_PAN}"

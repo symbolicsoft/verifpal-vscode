@@ -2,16 +2,14 @@
  * SPDX-License-Identifier: GPL-3.0-only */
 
 import * as vscode from "vscode";
+import {
+	LanguageClient,
+	type LanguageClientOptions,
+	type ServerOptions
+} from "vscode-languageclient/node";
 import AnalysisProvider from "./AnalysisProvider";
-import CompletionProvider from "./CompletionProvider";
-import DiagnosticsProvider from "./DiagnosticsProvider";
 import DiagramProvider from "./DiagramProvider";
-import FormattingProvider from "./FormattingProvider";
-import HoverProvider from "./HoverProvider";
-import ModelIndex from "./ModelIndex";
-import SignatureProvider from "./SignatureProvider";
-import SymbolProvider from "./SymbolProvider";
-import { resetBinaryWarning } from "./binary";
+import { reportMissingBinary, resetBinaryWarning } from "./binary";
 import {
 	LANGUAGE_ID,
 	configDeterminePath,
@@ -20,46 +18,32 @@ import {
 	isVerifpalDocument
 } from "./config";
 
-/**
- * Everything that exists only while the extension is enabled.
- *
- * Keeping it in one object is what lets `verifpal.enabled` take effect
- * immediately: flipping it disposes or rebuilds this, rather than requiring a
- * window reload as it used to.
- */
 class Session implements vscode.Disposable {
-	readonly analysis = new AnalysisProvider();
+	readonly client: LanguageClient;
+	readonly analysis: AnalysisProvider;
 	readonly diagram: DiagramProvider;
-	private readonly index = new ModelIndex();
-	private readonly diagnostics: DiagnosticsProvider;
 	private readonly registrations: vscode.Disposable[] = [];
+	private started = false;
 
 	constructor(extensionUri: vscode.Uri) {
-		this.diagram = new DiagramProvider(extensionUri);
-		this.diagnostics = new DiagnosticsProvider(this.index);
+		const command = configDeterminePath();
+		const server: ServerOptions = {
+			command,
+			args: ["lsp", "--stdio"]
+		};
+		const options: LanguageClientOptions = {
+			documentSelector: [{ scheme: "file", language: LANGUAGE_ID }, { scheme: "untitled", language: LANGUAGE_ID }],
+			synchronize: {
+				configurationSection: "verifpal"
+			},
+			outputChannelName: "Verifpal Language Server"
+		};
+		this.client = new LanguageClient("verifpal", "Verifpal", server, options);
+		this.analysis = new AnalysisProvider(this.client);
+		this.diagram = new DiagramProvider(extensionUri, this.client);
 		this.registrations.push(
-			this.index,
-			this.diagnostics,
 			this.analysis,
 			this.diagram,
-			vscode.languages.registerHoverProvider(LANGUAGE_ID, new HoverProvider(this.index)),
-			vscode.languages.registerDocumentFormattingEditProvider(
-				LANGUAGE_ID,
-				new FormattingProvider()
-			),
-			vscode.languages.registerDocumentSymbolProvider(LANGUAGE_ID, new SymbolProvider()),
-			vscode.languages.registerCompletionItemProvider(
-				LANGUAGE_ID,
-				new CompletionProvider(this.index),
-				"[",
-				","
-			),
-			vscode.languages.registerSignatureHelpProvider(
-				LANGUAGE_ID,
-				new SignatureProvider(),
-				"(",
-				","
-			),
 			vscode.workspace.onDidSaveTextDocument((document) => {
 				if (configGetAnalyzeOnSave() && isVerifpalDocument(document)) {
 					void this.analysis.verify(document);
@@ -68,15 +52,21 @@ class Session implements vscode.Disposable {
 		);
 	}
 
-	/** Re-runs validation from scratch, e.g. after the binary changed. */
-	refresh(): void {
-		this.analysis.clear();
-		this.diagnostics.refreshAll();
+	async start(): Promise<void> {
+		try {
+			await this.client.start();
+			this.started = true;
+		} catch (error) {
+			reportMissingBinary(String(error));
+		}
 	}
 
 	dispose(): void {
 		for (const registration of this.registrations) {
 			registration.dispose();
+		}
+		if (this.started) {
+			void this.client.stop();
 		}
 	}
 }
@@ -88,6 +78,7 @@ export function activate(context: vscode.ExtensionContext): void {
 		const enabled = configGetEnabled();
 		if (enabled && !session) {
 			session = new Session(context.extensionUri);
+			void session.start();
 		} else if (!enabled && session) {
 			session.dispose();
 			session = undefined;
@@ -115,9 +106,21 @@ export function activate(context: vscode.ExtensionContext): void {
 		return session;
 	};
 
+	const restart = (): void => {
+		if (session) {
+			session.dispose();
+			session = undefined;
+		}
+		resetBinaryWarning();
+		sync();
+	};
+
 	context.subscriptions.push(
 		vscode.commands.registerTextEditorCommand("verifpal.verify", (editor) => {
 			void requireSession()?.analysis.verify(editor.document);
+		}),
+		vscode.commands.registerTextEditorCommand("verifpal.cancel", (editor) => {
+			void requireSession()?.analysis.cancel(editor.document);
 		}),
 		vscode.commands.registerTextEditorCommand("verifpal.showDiagram", (editor) => {
 			void requireSession()?.diagram.show(editor.document);
@@ -128,21 +131,18 @@ export function activate(context: vscode.ExtensionContext): void {
 		vscode.commands.registerCommand("verifpal.clearResults", () => {
 			requireSession()?.analysis.clear();
 		}),
+		vscode.commands.registerCommand("verifpal.restart", restart),
 		vscode.commands.registerCommand("verifpal.path", () => {
 			vscode.window.showInformationMessage(
-				`Verifpal: analyses run '${configDeterminePath()}'.`
+				`Verifpal: the language server runs '${configDeterminePath()} lsp'.`
 			);
 		}),
 		vscode.workspace.onDidChangeConfiguration((event) => {
 			if (event.affectsConfiguration("verifpal.enabled")) {
 				sync();
 			}
-			if (
-				event.affectsConfiguration("verifpal.path") ||
-				event.affectsConfiguration("verifpal.validateOnType")
-			) {
-				resetBinaryWarning();
-				session?.refresh();
+			if (event.affectsConfiguration("verifpal.path")) {
+				restart();
 			}
 		}),
 		{ dispose: () => session?.dispose() }

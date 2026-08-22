@@ -5,9 +5,9 @@ import * as crypto from "crypto";
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
-import { getPrettyDiagram } from "./VerifpalLib";
-import { VerifpalRunError } from "./process";
-import { reportRunError } from "./binary";
+import type { LanguageClient } from "vscode-languageclient/node";
+import { ExecuteCommandRequest } from "vscode-languageclient";
+import type { DiagramResult } from "./protocol";
 import { isVerifpalDocument } from "./config";
 
 /**
@@ -32,7 +32,10 @@ export default class DiagramProvider implements vscode.Disposable {
 	private pending: { title: string; body: string } | undefined;
 	private readonly subscriptions: vscode.Disposable[] = [];
 
-	constructor(private readonly extensionUri: vscode.Uri) {
+	constructor(
+		private readonly extensionUri: vscode.Uri,
+		private readonly client: LanguageClient
+	) {
 		this.subscriptions.push(
 			vscode.workspace.onDidSaveTextDocument((document) => {
 				if (this.tracks(document)) {
@@ -109,29 +112,28 @@ export default class DiagramProvider implements vscode.Disposable {
 			return;
 		}
 		const title = path.basename(document.fileName);
-		let body: string;
+		let result: DiagramResult | null = null;
 		try {
-			body = await getPrettyDiagram(document.getText());
-		} catch (error) {
-			// The panel is still current only if nothing disposed it meanwhile.
-			if (this.panel === panel) {
-				const message =
-					error instanceof VerifpalRunError && error.isModelError
-						? error.message
-						: "Verifpal could not read this model.";
-				void panel.webview.postMessage({ type: "error", message });
-			}
-			if (!(error instanceof VerifpalRunError) || !error.isModelError) {
-				reportRunError(error, "diagram generation");
-			}
-			return;
+			result = (await this.client.sendRequest(ExecuteCommandRequest.type, {
+				command: "verifpal.diagram",
+				arguments: [{ uri: document.uri.toString() }]
+			})) as DiagramResult | null;
+		} catch {
+			result = null;
 		}
 		if (this.panel !== panel) {
 			return;
 		}
-		this.pending = { title, body };
+		if (!result) {
+			void panel.webview.postMessage({
+				type: "error",
+				message: "Verifpal could not read this model."
+			});
+			return;
+		}
+		this.pending = { title, body: result.readable };
 		if (this.ready) {
-			void panel.webview.postMessage({ type: "diagram", title, body });
+			void panel.webview.postMessage({ type: "diagram", title, body: result.readable });
 		}
 	}
 
