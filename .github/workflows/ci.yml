@@ -1,0 +1,96 @@
+# SPDX-FileCopyrightText: © 2019-2026 Nadim Kobeissi <nadim@symbolic.software>
+# SPDX-License-Identifier: GPL-3.0-only
+
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+# A newer push to the same branch makes an in-flight run pointless.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Lint, types and bundle
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Type-check, tests included
+        run: npm run check-types
+      - name: Bundle
+        run: npm run package
+      - name: Check the bundle is not empty
+        run: test -s dist/extension.js
+
+  unit:
+    name: Unit tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Compile
+        run: npm run compile-tests
+      - name: Run unit tests
+        run: npm run test:unit
+
+  integration:
+    name: VS Code ${{ matrix.vscode }} (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        # "stable" is what users run; the pinned version is the floor the
+        # manifest's "engines.vscode" promises to support.
+        vscode: [stable, "1.82.0"]
+    env:
+      VSCODE_VERSION: ${{ matrix.vscode }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Install the libraries Electron needs
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb libnss3 libgbm1 libgtk-3-0
+          sudo apt-get install -y libasound2t64 || sudo apt-get install -y libasound2
+      - name: Compile
+        run: npm run compile-tests
+      - name: Bundle
+        run: npm run package
+      - name: Run integration tests under Xvfb
+        if: runner.os == 'Linux'
+        run: xvfb-run -a npm run test:integration
+      - name: Run integration tests
+        if: runner.os != 'Linux'
+        run: npm run test:integration

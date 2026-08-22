@@ -1,0 +1,45 @@
+// A Verifpal model used as a fixture by the extension's own tests.
+// It is not meant to be a good protocol: it exercises the syntax.
+
+attacker[active]
+
+principal Alice[
+	knows private m
+	generates a
+	ga = PUBKEY(a)
+]
+
+principal Bob[
+	generates b
+	gb = PUBKEY(b)
+]
+
+Alice -> Bob: ga
+Bob -> Alice: [gb]
+
+principal Alice[
+	k = DH_KEX(gb, a)
+	e = AEAD_ENC(k, m, nil)
+	s = SIGN[malleable](a, e)
+]
+
+Alice -> Bob: e, s
+
+principal Bob[
+	k_b = DH_KEX(ga, b)
+	d = AEAD_DEC(k_b, e, nil)?
+	_ = SIGNVERIF(ga, e, s)?
+]
+
+phase[1]
+
+principal Alice[
+	leaks a
+]
+
+/* Queries come last: nothing may follow this block. */
+queries[
+	confidentiality? m
+	authentication? Alice -> Bob: e
+	freshness? e
+]

@@ -14,7 +14,16 @@ lint:
 	@npm run lint
 	@npm run check-types
 
-check: lint
+test:
+	@npm run compile-tests
+	@npm run test:unit
+
+test-integration:
+	@npm run compile-tests
+	@npm run package
+	@npm run test:integration
+
+check: lint test
 
 publish:
 	@vsce publish -p "${GITLAB_VSCE_PAN}"
@@ -22,4 +31,4 @@ publish:
 tag:
 	@scripts/tag.sh
 
-.PHONY: dependencies clean build lint check publish tag
+.PHONY: dependencies clean build lint test test-integration check publish tag

@@ -247,17 +247,29 @@
 		"compile": "node esbuild.js",
 		"watch": "node esbuild.js --watch",
 		"package": "node esbuild.js --production",
+		"compile-tests": "tsc -p ./tsconfig.json",
 		"check-types": "tsc --noEmit",
-		"lint": "eslint ."
+		"lint": "eslint .",
+		"pretest:unit": "npm run compile-tests",
+		"test:unit": "mocha",
+		"pretest:integration": "npm run compile-tests && npm run package",
+		"test:integration": "vscode-test",
+		"test": "npm run test:unit && npm run test:integration"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.39.5",
+		"@types/mocha": "^10.0.10",
+		"@types/node": "^20.0.0",
 		"@types/vscode": "~1.82.0",
+		"@vscode/test-cli": "^0.0.15",
+		"@vscode/test-electron": "^3.1.0",
 		"esbuild": "^0.28.2",
 		"eslint": "^9.39.5",
+		"mocha": "^11.8.0",
 		"typescript": "^5.7.0",
 		"typescript-eslint": "^8.67.0",
-		"@types/node": "^20.0.0"
+		"vscode-oniguruma": "^2.0.1",
+		"vscode-textmate": "^9.3.2"
 	},
 	"dependencies": {
 		"vscode-languageclient": "^9.0.1"

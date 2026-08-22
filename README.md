@@ -5,6 +5,8 @@
 
 # Verifpal for Visual Studio Code
 
+[![CI](https://github.com/symbolicsoft/verifpal-vscode/actions/workflows/ci.yml/badge.svg)](https://github.com/symbolicsoft/verifpal-vscode/actions/workflows/ci.yml)
+
 [![](https://img.youtube.com/vi/it_hJkVU-UA/0.jpg)](http://www.youtube.com/watch?v=it_hJkVU-UA "Verifpal for Visual Studio Code")
 
 ## What is Verifpal for Visual Studio Code?

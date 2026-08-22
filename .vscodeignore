@@ -1,12 +1,15 @@
+.github/**
 .vscode/**
+.vscode-test/**
+.vscode-test.mjs
 .gitlab-ci.yml
+.mocharc.json
 src/**
 out/**
 scripts/**
 node_modules/**
 esbuild.js
 tsconfig.json
-tsconfig.test.json
 Makefile
 .gitignore
 eslint.config.mjs
