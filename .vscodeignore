@@ -6,9 +6,11 @@ scripts/**
 node_modules/**
 esbuild.js
 tsconfig.json
+tsconfig.test.json
 Makefile
 .gitignore
 eslint.config.mjs
 package-lock.json
+syntax/verifpal.iro
 **/*.map
 **/*.ts

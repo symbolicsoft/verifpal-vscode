@@ -1,13 +1,14 @@
 stages:
-  - lint
+  - check
   - publish
 
-lint:
+check:
   image: node:latest
-  stage: lint 
+  stage: check
   script:
     - make dependencies
     - make lint
+    - make test
 
 publish:
   image: node:latest
@@ -16,5 +17,7 @@ publish:
     - tags
   script:
     - make dependencies
+    - make lint
+    - make test
     - npm install -g vsce
     - vsce publish -p "${GITLAB_VSCE_PAN}"

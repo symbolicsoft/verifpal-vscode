@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Nadim Kobeissi <nadim@symbolic.software>
+// SPDX-FileCopyrightText: © 2019-2026 Nadim Kobeissi <nadim@symbolic.software>
 // SPDX-License-Identifier: GPL-3.0-only
 
 name                   = verifpal
@@ -99,6 +99,29 @@ contexts [] {
          }
          : include "main";
       }
+      // The constants an indented line binds, e.g. `ga` in `ga = PUBKEY(a)`.
+      // The line-start rule further down only reaches unindented lines, which
+      // are messages, so assignment targets used to go unstyled.
+      : inline_push {
+         regex          \= ^(\s+)(?=[a-zA-Z0-9_]+(\s*,\s*[a-zA-Z0-9_]+)*\s*=[^=])
+         styles []       = .default;
+         : pop {
+            regex       \= (?==)
+            styles []    = .default;
+         }
+         : pattern {
+            regex          \= \b_\b
+            styles []       = .function;
+         }
+         : pattern {
+            regex          \= [a-zA-Z0-9_]+
+            styles []       = .variable;
+         }
+         : pattern {
+            regex          \= ,
+            styles []       = .punctuation;
+         }
+      }
       : inline_push {
          regex          \= (\()
          styles []       = .punctuation;
@@ -106,8 +129,31 @@ contexts [] {
             regex       \= (\)\??)
             styles []    = .punctuation;
          }
+         // A capability annotation exists only between a primitive's name and its
+         // argument list, so it is matched there rather than wherever the words
+         // appear. `weak`, `forgeable`, `malleable` and `from` are contextual
+         // keywords the engine deliberately keeps out of its reserved list: a
+         // constant may legally be named `weak`, and styling every occurrence as
+         // a keyword was wrong. Primitive names are matched case-insensitively
+         // because the parser resolves them that way.
+         : inline_push {
+            regex          \= \b((?i:RINGSIGNVERIF|RINGSIGN|SHAMIR_SPLIT|SHAMIR_JOIN|AEAD_ENC|AEAD_DEC|PKE_ENC|PKE_DEC|KEM_ENCAP|KEM_DECAP|PW_HASH|SIGNVERIF|SIGN|UNBLIND|BLIND|CONCAT|SPLIT|ASSERT|PUBKEY|DH_KEX|HKDF|HASH|MAC|ENC|DEC))(\s*)(\[)
+            styles []       = .function, .default, .punctuation;
+            : pop {
+               regex       \= (\])
+               styles []    = .punctuation;
+            }
+            : pattern {
+               regex          \= \b(weak|forgeable|malleable|from|phase)\b
+               styles []       = .keyword;
+            }
+            : pattern {
+               regex          \= ([0-9]+)
+               styles []       = .punctuation;
+            }
+         }
          : pattern {
-            regex          \= (UNBLIND|BLIND|RINGSIGNVERIF|RINGSIGN|KEM_ENCAP|KEM_DECAP|PW_HASH|HASH|HKDF|AEAD_ENC|AEAD_DEC|ENC|DEC|ASSERT|CONCAT|SPLIT|MAC|SIGNVERIF|SIGN|PKE_ENC|PKE_DEC|PUBKEY|DH_KEX|KEM_ENCAP|KEM_DECAP|SHAMIR_SPLIT|SHAMIR_JOIN|nil|_)
+            regex          \= \b(?i:RINGSIGNVERIF|RINGSIGN|SHAMIR_SPLIT|SHAMIR_JOIN|AEAD_ENC|AEAD_DEC|PKE_ENC|PKE_DEC|KEM_ENCAP|KEM_DECAP|PW_HASH|SIGNVERIF|SIGN|UNBLIND|BLIND|CONCAT|SPLIT|ASSERT|PUBKEY|DH_KEX|HKDF|HASH|MAC|ENC|DEC|nil|_)\b
             styles []       = .function;
          }
          : pattern {
@@ -124,16 +170,31 @@ contexts [] {
          regex          \= (confidentiality\?|authentication\?|freshness\?|unlinkability\?|equivalence\?)
          styles []       = .keyword;
       }
-      // Declared weakening assumptions, e.g. SIGN[forgeable](sk, m) or
-      // AEAD_ENC[weak from phase 2](k, m, ad). `from` and `phase` are only
-      // styled when they follow a capability, since both are ordinary words
-      // elsewhere and neither is a reserved constant name.
-      : pattern {
-         regex          \= \b(weak|forgeable|malleable)\b(\s+(from)\s+(phase)\s+([0-9]+))?
-         styles []       = .keyword, .keyword, .keyword, .keyword, .constant;
+      // A capability annotation exists only between a primitive's name and its
+      // argument list, so it is matched there rather than wherever the words
+      // appear. `weak`, `forgeable`, `malleable` and `from` are contextual
+      // keywords the engine deliberately keeps out of its reserved list: a
+      // constant may legally be named `weak`, and styling every occurrence as
+      // a keyword was wrong. Primitive names are matched case-insensitively
+      // because the parser resolves them that way.
+      : inline_push {
+         regex          \= \b((?i:RINGSIGNVERIF|RINGSIGN|SHAMIR_SPLIT|SHAMIR_JOIN|AEAD_ENC|AEAD_DEC|PKE_ENC|PKE_DEC|KEM_ENCAP|KEM_DECAP|PW_HASH|SIGNVERIF|SIGN|UNBLIND|BLIND|CONCAT|SPLIT|ASSERT|PUBKEY|DH_KEX|HKDF|HASH|MAC|ENC|DEC))(\s*)(\[)
+         styles []       = .function, .default, .punctuation;
+         : pop {
+            regex       \= (\])
+            styles []    = .punctuation;
+         }
+         : pattern {
+            regex          \= \b(weak|forgeable|malleable|from|phase)\b
+            styles []       = .keyword;
+         }
+         : pattern {
+            regex          \= ([0-9]+)
+            styles []       = .punctuation;
+         }
       }
       : pattern {
-         regex          \= (UNBLIND|BLIND|RINGSIGNVERIF|RINGSIGN|KEM_ENCAP|KEM_DECAP|PW_HASH|HASH|HKDF|AEAD_ENC|AEAD_DEC|ENC|DEC|ASSERT|CONCAT|SPLIT|MAC|SIGNVERIF|SIGN|PKE_ENC|PKE_DEC|PUBKEY|DH_KEX|KEM_ENCAP|KEM_DECAP|SHAMIR_SPLIT|SHAMIR_JOIN|nil|_)
+         regex          \= \b(?i:RINGSIGNVERIF|RINGSIGN|SHAMIR_SPLIT|SHAMIR_JOIN|AEAD_ENC|AEAD_DEC|PKE_ENC|PKE_DEC|KEM_ENCAP|KEM_DECAP|PW_HASH|SIGNVERIF|SIGN|UNBLIND|BLIND|CONCAT|SPLIT|ASSERT|PUBKEY|DH_KEX|HKDF|HASH|MAC|ENC|DEC|nil|_)\b
          styles []       = .function;
       }
       : inline_push {

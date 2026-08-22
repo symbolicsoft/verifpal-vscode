@@ -14,10 +14,15 @@ lint:
 	@npm run lint
 	@npm run check-types
 
+test:
+	@npm test
+
+check: lint test
+
 publish:
 	@vsce publish -p "${GITLAB_VSCE_PAN}"
 
 tag:
 	@scripts/tag.sh
 
-.PHONY: dependencies clean build lint publish tag
+.PHONY: dependencies clean build lint test check publish tag

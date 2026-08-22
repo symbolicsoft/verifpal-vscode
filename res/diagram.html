@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="Content-Security-Policy" content="$$CSP$$">
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, height=device-height, target-densitydpi=device-dpi">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<script nonce="$$NONCE$$" src="$$EXTPATH1$$"></script>
 	<script nonce="$$NONCE$$" src="$$EXTPATH2$$"></script>
 	<script nonce="$$NONCE$$" src="$$EXTPATH3$$"></script>
@@ -12,16 +12,29 @@
 	<style type="text/css">
 		body {
 			padding: 10px;
-			background-color: var(--vscode-editor-selectionHighlightBackground);
-		}
-
-		span#diagramText {
-			display: none;
+			background-color: var(--vscode-editor-background);
+			color: var(--vscode-editor-foreground);
+			font-family: var(--vscode-font-family);
+			font-size: var(--vscode-font-size);
 		}
 
 		div#diagram {
 			margin: 0 auto;
-			width: 80%;
+			width: 90%;
+		}
+
+		div#status {
+			display: none;
+			margin: 1rem auto;
+			width: 90%;
+			padding: 0.75rem 1rem;
+			border-left: 3px solid var(--vscode-editorError-foreground);
+			background-color: var(--vscode-editorWidget-background);
+			white-space: pre-wrap;
+		}
+
+		div#status.visible {
+			display: block;
 		}
 
 		.title rect,
@@ -64,17 +77,55 @@
 </head>
 
 <body>
-	<span id="diagramText">
-		Title:$$MODELNAME$$
-		$$DIAGRAM$$
-	</span>
 	<div id="diagram"></div>
+	<div id="status"></div>
 	<script nonce="$$NONCE$$">
-		let diagramText = document.getElementById("diagramText").innerText;
-		let diagram = Diagram.parse(diagramText);
-		diagram.drawSVG("diagram", {
-			theme: 'simple'
-		});
+		(function () {
+			const api = acquireVsCodeApi();
+			const target = document.getElementById("diagram");
+			const status = document.getElementById("status");
+
+			function setStatus(message) {
+				if (message) {
+					status.textContent = message;
+					status.classList.add("visible");
+				} else {
+					status.textContent = "";
+					status.classList.remove("visible");
+				}
+			}
+
+			function render(title, body) {
+				target.textContent = "";
+				if (!body || body.trim().length === 0) {
+					setStatus("This model has no messages or operations to diagram yet.");
+					return;
+				}
+				try {
+					const diagram = Diagram.parse("Title:" + title + "\n" + body);
+					diagram.drawSVG("diagram", { theme: "simple" });
+					setStatus(null);
+				} catch (e) {
+					setStatus("This model could not be drawn: " + (e && e.message ? e.message : e));
+				}
+			}
+
+			window.addEventListener("message", function (event) {
+				const message = event.data;
+				if (!message) {
+					return;
+				}
+				if (message.type === "diagram") {
+					render(message.title, message.body);
+				} else if (message.type === "error") {
+					target.textContent = "";
+					setStatus(message.message);
+				}
+			});
+
+			// The extension holds the model text; ask for it once we can draw.
+			api.postMessage({ type: "ready" });
+		}());
 	</script>
 </body>
 

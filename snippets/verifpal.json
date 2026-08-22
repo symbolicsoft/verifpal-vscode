@@ -1,0 +1,121 @@
+{
+	"Model skeleton": {
+		"prefix": "model",
+		"description": "A complete Verifpal model: attacker, two principals, a message and a query block.",
+		"body": [
+			"attacker[${1|active,passive|}]",
+			"",
+			"principal ${2:Alice}[",
+			"\tknows private ${3:m}",
+			"\tgenerates ${4:a}",
+			"]",
+			"",
+			"${2:Alice} -> ${5:Bob}: ${4:a}",
+			"",
+			"principal ${5:Bob}[",
+			"\t$0",
+			"]",
+			"",
+			"queries[",
+			"\tconfidentiality? ${3:m}",
+			"]"
+		]
+	},
+	"Principal block": {
+		"prefix": "principal",
+		"description": "A block of operations performed by one principal.",
+		"body": ["principal ${1:Alice}[", "\t$0", "]"]
+	},
+	"Message": {
+		"prefix": "message",
+		"description": "Send values from one principal to another.",
+		"body": ["${1:Alice} -> ${2:Bob}: ${3:value}"]
+	},
+	"Guarded message": {
+		"prefix": "guarded",
+		"description": "Send a value the attacker may observe but not replace.",
+		"body": ["${1:Alice} -> ${2:Bob}: [${3:value}]"]
+	},
+	"Phase": {
+		"prefix": "phase",
+		"description": "Open a new phase. Phases must increment by exactly one.",
+		"body": ["phase[${1:1}]"]
+	},
+	"Queries block": {
+		"prefix": "queries",
+		"description": "The block of security queries. Nothing may follow it.",
+		"body": ["queries[", "\t$0", "]"]
+	},
+	"Confidentiality query": {
+		"prefix": "confidentiality",
+		"description": "Can the attacker obtain this value?",
+		"body": ["confidentiality? ${1:value}"]
+	},
+	"Authentication query": {
+		"prefix": "authentication",
+		"description": "Does the recipient rely on this value only if the sender sent it?",
+		"body": ["authentication? ${1:Alice} -> ${2:Bob}: ${3:value}"]
+	},
+	"Freshness query": {
+		"prefix": "freshness",
+		"description": "Is this value fresh between sessions? Detects replay.",
+		"body": ["freshness? ${1:value}"]
+	},
+	"Unlinkability query": {
+		"prefix": "unlinkability",
+		"description": "Can the attacker tell these values share a source?",
+		"body": ["unlinkability? ${1:a}, ${2:b}"]
+	},
+	"Equivalence query": {
+		"prefix": "equivalence",
+		"description": "Can these values ever fail to be equivalent?",
+		"body": ["equivalence? ${1:a}, ${2:b}"]
+	},
+	"Query with precondition": {
+		"prefix": "precondition",
+		"description": "Annotate a failing query with a message that is sent anyway.",
+		"body": ["${1|confidentiality,freshness|}? ${2:value}[ precondition[ ${3:Bob} -> ${4:Alice}: ${5:ack} ] ]"]
+	},
+	"Diffie-Hellman exchange": {
+		"prefix": "dh",
+		"description": "Derive a public key and a Diffie-Hellman shared secret.",
+		"body": [
+			"generates ${1:a}",
+			"g${1:a} = PUBKEY(${1:a})",
+			"${2:k} = DH_KEX(g${3:b}, ${1:a})"
+		]
+	},
+	"KEM encapsulation": {
+		"prefix": "kem",
+		"description": "Post-quantum key encapsulation: shared secret and ciphertext.",
+		"body": [
+			"generates ${1:r}",
+			"${2:ss}, ${3:ct} = KEM_ENCAP(PUBKEY(${4:dk}), ${1:r})"
+		]
+	},
+	"Authenticated encryption": {
+		"prefix": "aead",
+		"description": "Encrypt with associated data, and decrypt with a halting check.",
+		"body": ["${1:e} = AEAD_ENC(${2:k}, ${3:m}, ${4:nil})"]
+	},
+	"Checked authenticated decryption": {
+		"prefix": "aeaddec",
+		"description": "Decrypt, halting this principal if authentication fails.",
+		"body": ["${1:d} = AEAD_DEC(${2:k}, ${3:e}, ${4:nil})?"]
+	},
+	"Signature and verification": {
+		"prefix": "sign",
+		"description": "Sign a message, and verify it with a halting check.",
+		"body": ["${1:s} = SIGN(${2:sk}, ${3:m})"]
+	},
+	"Weakening assumption": {
+		"prefix": "weak",
+		"description": "Declare that a primitive at this call site is broken for the attacker.",
+		"body": ["${1:PUBKEY}[${2|weak,forgeable,malleable|}](${3:args})"]
+	},
+	"Delayed weakening assumption": {
+		"prefix": "weakfrom",
+		"description": "Declare an assumption that only comes into force from a later phase.",
+		"body": ["${1:PUBKEY}[${2|weak,forgeable,malleable|} from phase ${3:1}](${4:args})"]
+	}
+}

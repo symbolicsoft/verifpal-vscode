@@ -1,7 +1,7 @@
 {
 	"name": "verifpal",
 	"displayName": "Verifpal",
-	"version": "1.0.12",
+	"version": "1.1.0",
 	"publisher": "symbolicsoft",
 	"description": "Verifpal language support.",
 	"author": {
@@ -13,7 +13,17 @@
 		"vscode": "^1.75.0"
 	},
 	"categories": [
-		"Programming Languages"
+		"Programming Languages",
+		"Linters",
+		"Formatters",
+		"Visualization"
+	],
+	"keywords": [
+		"verifpal",
+		"formal verification",
+		"cryptography",
+		"protocol",
+		"security"
 	],
 	"icon": "res/icon.png",
 	"repository": {
@@ -25,6 +35,18 @@
 		"url": "https://github.com/symbolicsoft/verifpal-vscode/issues"
 	},
 	"main": "./dist/extension.js",
+	"extensionKind": [
+		"workspace"
+	],
+	"capabilities": {
+		"untrustedWorkspaces": {
+			"supported": "limited",
+			"description": "Verifpal analyses models by running the Verifpal binary. In an untrusted workspace, the binary is taken from your user settings or your PATH: a workspace-level 'verifpal.path' is ignored, so that opening an untrusted repository cannot cause an arbitrary executable to be run.",
+			"restrictedConfigurations": [
+				"verifpal.path"
+			]
+		}
+	},
 	"contributes": {
 		"languages": [
 			{
@@ -46,33 +68,108 @@
 				"path": "./syntax/verifpal.tmLanguage"
 			}
 		],
+		"snippets": [
+			{
+				"language": "verifpal",
+				"path": "./snippets/verifpal.json"
+			}
+		],
 		"commands": [
 			{
-				"command": "verifpal.path",
-				"title": "Verifpal: Show Path to Verifpal"
-			},
-			{
 				"command": "verifpal.verify",
-				"title": "Verifpal: Run Attacker Analysis"
+				"title": "Run Attacker Analysis",
+				"category": "Verifpal",
+				"icon": "$(shield)"
 			},
 			{
 				"command": "verifpal.showDiagram",
-				"title": "Verifpal: Show Protocol Diagram"
+				"title": "Show Protocol Diagram",
+				"category": "Verifpal",
+				"icon": "$(type-hierarchy)"
+			},
+			{
+				"command": "verifpal.showOutput",
+				"title": "Show Analysis Output",
+				"category": "Verifpal"
+			},
+			{
+				"command": "verifpal.clearResults",
+				"title": "Clear Analysis Results",
+				"category": "Verifpal"
+			},
+			{
+				"command": "verifpal.path",
+				"title": "Show Path to Verifpal",
+				"category": "Verifpal"
 			}
 		],
+		"menus": {
+			"commandPalette": [
+				{
+					"command": "verifpal.verify",
+					"when": "editorLangId == verifpal"
+				},
+				{
+					"command": "verifpal.showDiagram",
+					"when": "editorLangId == verifpal"
+				},
+				{
+					"command": "verifpal.clearResults",
+					"when": "editorLangId == verifpal"
+				}
+			],
+			"editor/title": [
+				{
+					"command": "verifpal.verify",
+					"when": "editorLangId == verifpal",
+					"group": "navigation@1"
+				},
+				{
+					"command": "verifpal.showDiagram",
+					"when": "editorLangId == verifpal",
+					"group": "navigation@2"
+				}
+			],
+			"editor/context": [
+				{
+					"command": "verifpal.verify",
+					"when": "editorLangId == verifpal",
+					"group": "verifpal@1"
+				},
+				{
+					"command": "verifpal.showDiagram",
+					"when": "editorLangId == verifpal",
+					"group": "verifpal@2"
+				}
+			]
+		},
 		"configuration": {
 			"type": "object",
-			"title": "Verifpal Configuration",
+			"title": "Verifpal",
 			"properties": {
 				"verifpal.enabled": {
 					"type": "boolean",
 					"default": true,
-					"description": "Enable or disable Verifpal integration"
+					"description": "Enable Verifpal IDE features. Takes effect immediately; no window reload is needed.",
+					"scope": "window"
 				},
 				"verifpal.path": {
 					"type": "string",
 					"default": "",
-					"description": "Path to Verifpal binary"
+					"markdownDescription": "Path to the Verifpal binary. Leave empty to use `verifpal` from your `PATH`. Ignored in an untrusted workspace.",
+					"scope": "machine-overridable"
+				},
+				"verifpal.validateOnType": {
+					"type": "boolean",
+					"default": true,
+					"description": "Check models for parse and sanity errors as you type, and report them in the Problems panel. Disable to check only on save.",
+					"scope": "window"
+				},
+				"verifpal.analyzeOnSave": {
+					"type": "boolean",
+					"default": false,
+					"description": "Run a full attacker analysis every time a model is saved. Off by default: analysis of a large model can take a long time.",
+					"scope": "window"
 				}
 			}
 		}
@@ -83,16 +180,18 @@
 		"watch": "node esbuild.js --watch",
 		"package": "node esbuild.js --production",
 		"check-types": "tsc --noEmit",
-		"lint": "eslint ."
+		"lint": "eslint .",
+		"pretest": "tsc -p tsconfig.test.json",
+		"test": "node --test out/*.test.js"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.39.5",
 		"@types/node": "^20.0.0",
-		"@types/vscode": "^1.75.0",
-		"esbuild": "^0.27.3",
+		"@types/vscode": "~1.75.0",
+		"esbuild": "^0.28.2",
 		"eslint": "^9.39.5",
 		"typescript": "^5.7.0",
-		"typescript-eslint": "^8.66.0"
+		"typescript-eslint": "^8.67.0"
 	},
 	"dependencies": {
 		"cross-spawn": "^7.0.6"
