@@ -63,9 +63,6 @@ make check          # what CI runs
 
 The extension no longer has unit tests, because it no longer has anything to unit test. It used to carry a scanner for the Verifpal language and a copy of the engine's primitive table, and the tests existed to catch those drifting — the extension once documented `malleable` as unimplemented long after `ENC[malleable]` started working, and nothing caught it. Both are now gone: the language lives in the engine, and the extension asks. What is left is glue, and it is exercised by the language server's own test suite in the Verifpal repository.
 
-## Discussion
-Sign up to the [Verifpal Mailing List](https://lists.symbolic.software/mailman/listinfo/verifpal) to stay informed on the latest news and announcements regarding Verifpal, and to participate in Verifpal discussions.
-
 ## License
 Verifpal and Verifpal for Visual Studio Code are published by Symbolic Software. They are provided as free and open source software, licensed under the [GNU General Public License, version 3](https://www.gnu.org/licenses/gpl-3.0.en.html). The Verifpal User Manual is provided under the [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)](https://creativecommons.org/licenses/by-nc-nd/4.0/) license.
 
