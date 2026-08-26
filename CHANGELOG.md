@@ -5,6 +5,10 @@
 
 # Change Log
 
+## 2.1.0
+
+Add support for scenarios, an upcoming Verifpal feature.
+
 ## 2.0.0
 
 The extension is now a client of `verifpal lsp`, the language server built
