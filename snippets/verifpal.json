@@ -46,6 +46,21 @@
 		"description": "The block of security queries. Nothing may follow it.",
 		"body": ["queries[", "\t$0", "]"]
 	},
+	"Scenarios block": {
+		"prefix": "scenarios",
+		"description": "Peer instantiation: one run of the model per line, with that line's bindings applied. Goes before the queries block.",
+		"body": [
+			"scenarios[",
+			"\t${1:Alice}[${2:gpeer} = ${3:gb}]",
+			"\t${1:Alice}[${2:gpeer} = ${4:gm}]",
+			"]"
+		]
+	},
+	"Scenario instance": {
+		"prefix": "scenario",
+		"description": "One scenario: the principal it instantiates, and the constants that run binds.",
+		"body": ["${1:Alice}[${2:gpeer} = ${3:gb}]"]
+	},
 	"Confidentiality query": {
 		"prefix": "confidentiality",
 		"description": "Can the attacker obtain this value?",

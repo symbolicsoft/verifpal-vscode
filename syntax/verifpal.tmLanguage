@@ -114,6 +114,35 @@
 				</dict>
 				<dict>
 					<key>begin</key>
+					<string>(scenarios)</string>
+					<key>beginCaptures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>entity.name.function.verifpal</string>
+						</dict>
+					</dict>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>include</key>
+							<string>#main__3</string>
+						</dict>
+					</array>
+					<key>end</key>
+					<string>(\[)</string>
+					<key>endCaptures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>constant.character.verifpal</string>
+						</dict>
+					</dict>
+				</dict>
+				<dict>
+					<key>begin</key>
 					<string>(precondition)</string>
 					<key>beginCaptures</key>
 					<dict>
