@@ -11,6 +11,14 @@ import { declaredCommands, extensionId, manifest } from "../repo";
  * when the language server cannot be spawned at all.
  */
 
+/**
+ * The commands `verifpal lsp` lists in its `executeCommandProvider`. The
+ * language client registers each of them as an editor command when a server
+ * is running, which is the case on a machine with Verifpal installed; they
+ * are the server's, so they have no place in the manifest.
+ */
+const SERVER_COMMANDS = new Set(["verifpal.analyze", "verifpal.cancelAnalysis", "verifpal.diagram"]);
+
 function extension(): vscode.Extension<unknown> {
 	const found = vscode.extensions.getExtension(extensionId());
 	assert.ok(found, `${extensionId()} is not installed in the test instance`);
@@ -41,8 +49,8 @@ describe("the extension", () => {
 	it("registers no verifpal command it does not declare", async () => {
 		await extension().activate();
 		const declared = new Set(declaredCommands());
-		const registered = (await vscode.commands.getCommands(true)).filter((command) =>
-			command.startsWith("verifpal.")
+		const registered = (await vscode.commands.getCommands(true)).filter(
+			(command) => command.startsWith("verifpal.") && !SERVER_COMMANDS.has(command)
 		);
 		for (const command of registered) {
 			assert.ok(declared.has(command), `'${command}' is registered but not in the manifest`);

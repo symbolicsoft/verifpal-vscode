@@ -88,8 +88,8 @@
 	},
 	"Query with precondition": {
 		"prefix": "precondition",
-		"description": "Annotate a failing query with a message that is sent anyway.",
-		"body": ["${1|confidentiality,freshness|}? ${2:value}[ precondition[ ${3:Bob} -> ${4:Alice}: ${5:ack} ] ]"]
+		"description": "Restrict a query to the executions in which a message is sent.",
+		"body": ["${1|confidentiality,authentication,freshness,unlinkability,equivalence|}? ${2:value}[ precondition[ ${3:Alice} -> ${4:Bob}: ${5:done} ] ]"]
 	},
 	"Diffie-Hellman exchange": {
 		"prefix": "dh",
@@ -110,7 +110,7 @@
 	},
 	"Authenticated encryption": {
 		"prefix": "aead",
-		"description": "Encrypt with associated data, and decrypt with a halting check.",
+		"description": "Encrypt with associated data. See 'aeaddec' for the checked decryption.",
 		"body": ["${1:e} = AEAD_ENC(${2:k}, ${3:m}, ${4:nil})"]
 	},
 	"Checked authenticated decryption": {
@@ -118,9 +118,9 @@
 		"description": "Decrypt, halting this principal if authentication fails.",
 		"body": ["${1:d} = AEAD_DEC(${2:k}, ${3:e}, ${4:nil})?"]
 	},
-	"Signature and verification": {
+	"Signature": {
 		"prefix": "sign",
-		"description": "Sign a message, and verify it with a halting check.",
+		"description": "Sign a message with a private key.",
 		"body": ["${1:s} = SIGN(${2:sk}, ${3:m})"]
 	},
 	"Weakening assumption": {

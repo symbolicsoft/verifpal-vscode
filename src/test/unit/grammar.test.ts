@@ -128,14 +128,17 @@ describe("TextMate grammar tokenization", () => {
 	});
 
 	it("scopes knowledge qualifiers", () => {
-		const tokens = tokenize(
-			["principal Alice[", "\tknows private a", "\tknows public b", "\tknows password c", "]"].join(
-				"\n"
-			)
-		);
-		for (const qualifier of ["private", "public", "password"]) {
+		const tokens = tokenize(["principal Alice[", "\tknows private a", "\tknows public b", "]"].join("\n"));
+		for (const qualifier of ["private", "public"]) {
 			assertScope(tokens, qualifier, "keyword.verifpal");
 		}
+		// `password` is no longer a qualifier, so it is an ordinary constant name.
+		const constant = tokenize("principal Alice[\n\tknows private password\n]");
+		const token = first(constant, "password");
+		assert.ok(
+			!token.scopes.includes("keyword.verifpal"),
+			"a constant named 'password' was styled as a knowledge qualifier"
+		);
 	});
 
 	it("scopes primitives, and does so case-insensitively", () => {

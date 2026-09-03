@@ -137,7 +137,7 @@ contexts [] {
          // a keyword was wrong. Primitive names are matched case-insensitively
          // because the parser resolves them that way.
          : inline_push {
-            regex          \= \b((?i:RINGSIGNVERIF|RINGSIGN|SHAMIR_SPLIT|SHAMIR_JOIN|AEAD_ENC|AEAD_DEC|PKE_ENC|PKE_DEC|KEM_ENCAP|KEM_DECAP|PW_HASH|SIGNVERIF|SIGN|UNBLIND|BLIND|CONCAT|SPLIT|ASSERT|PUBKEY|DH_KEX|HKDF|HASH|MAC|ENC|DEC))(\s*)(\[)
+            regex          \= \b((?i:RINGSIGNVERIF|RINGSIGN|SHAMIR_SPLIT|SHAMIR_JOIN|AEAD_ENC|AEAD_DEC|PKE_ENC|PKE_DEC|KEM_ENCAP|KEM_DECAP|SIGNVERIF|SIGN|UNBLIND|BLIND|CONCAT|SPLIT|ASSERT|PUBKEY|DH_KEX|HKDF|HASH|MAC|ENC|DEC))(\s*)(\[)
             styles []       = .function, .default, .punctuation;
             : pop {
                regex       \= (\])
@@ -153,7 +153,7 @@ contexts [] {
             }
          }
          : pattern {
-            regex          \= \b(?i:RINGSIGNVERIF|RINGSIGN|SHAMIR_SPLIT|SHAMIR_JOIN|AEAD_ENC|AEAD_DEC|PKE_ENC|PKE_DEC|KEM_ENCAP|KEM_DECAP|PW_HASH|SIGNVERIF|SIGN|UNBLIND|BLIND|CONCAT|SPLIT|ASSERT|PUBKEY|DH_KEX|HKDF|HASH|MAC|ENC|DEC|nil|_)\b
+            regex          \= \b(?i:RINGSIGNVERIF|RINGSIGN|SHAMIR_SPLIT|SHAMIR_JOIN|AEAD_ENC|AEAD_DEC|PKE_ENC|PKE_DEC|KEM_ENCAP|KEM_DECAP|SIGNVERIF|SIGN|UNBLIND|BLIND|CONCAT|SPLIT|ASSERT|PUBKEY|DH_KEX|HKDF|HASH|MAC|ENC|DEC|nil|_)\b
             styles []       = .function;
          }
          : pattern {
@@ -178,7 +178,7 @@ contexts [] {
       // a keyword was wrong. Primitive names are matched case-insensitively
       // because the parser resolves them that way.
       : inline_push {
-         regex          \= \b((?i:RINGSIGNVERIF|RINGSIGN|SHAMIR_SPLIT|SHAMIR_JOIN|AEAD_ENC|AEAD_DEC|PKE_ENC|PKE_DEC|KEM_ENCAP|KEM_DECAP|PW_HASH|SIGNVERIF|SIGN|UNBLIND|BLIND|CONCAT|SPLIT|ASSERT|PUBKEY|DH_KEX|HKDF|HASH|MAC|ENC|DEC))(\s*)(\[)
+         regex          \= \b((?i:RINGSIGNVERIF|RINGSIGN|SHAMIR_SPLIT|SHAMIR_JOIN|AEAD_ENC|AEAD_DEC|PKE_ENC|PKE_DEC|KEM_ENCAP|KEM_DECAP|SIGNVERIF|SIGN|UNBLIND|BLIND|CONCAT|SPLIT|ASSERT|PUBKEY|DH_KEX|HKDF|HASH|MAC|ENC|DEC))(\s*)(\[)
          styles []       = .function, .default, .punctuation;
          : pop {
             regex       \= (\])
@@ -194,7 +194,7 @@ contexts [] {
          }
       }
       : pattern {
-         regex          \= \b(?i:RINGSIGNVERIF|RINGSIGN|SHAMIR_SPLIT|SHAMIR_JOIN|AEAD_ENC|AEAD_DEC|PKE_ENC|PKE_DEC|KEM_ENCAP|KEM_DECAP|PW_HASH|SIGNVERIF|SIGN|UNBLIND|BLIND|CONCAT|SPLIT|ASSERT|PUBKEY|DH_KEX|HKDF|HASH|MAC|ENC|DEC|nil|_)\b
+         regex          \= \b(?i:RINGSIGNVERIF|RINGSIGN|SHAMIR_SPLIT|SHAMIR_JOIN|AEAD_ENC|AEAD_DEC|PKE_ENC|PKE_DEC|KEM_ENCAP|KEM_DECAP|SIGNVERIF|SIGN|UNBLIND|BLIND|CONCAT|SPLIT|ASSERT|PUBKEY|DH_KEX|HKDF|HASH|MAC|ENC|DEC|nil|_)\b
          styles []       = .function;
       }
       : inline_push {
@@ -205,7 +205,7 @@ contexts [] {
             styles []    = .default;
          }
          : pattern {
-            regex          \= ((public)|(private)|(password))
+            regex          \= ((public)|(private))
             styles []       = .constant;
          }
          : include "main";

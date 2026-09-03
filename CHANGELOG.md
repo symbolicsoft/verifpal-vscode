@@ -5,6 +5,47 @@
 
 # Change Log
 
+## 2.2.0
+
+Remove the `PW_HASH` primitive and the `knows password` declaration, which
+are being removed from Verifpal, from syntax highlighting.
+
+Describe the `precondition` query option as Verifpal now defines it: a
+restriction of the query to the executions in which the named message is
+sent, rather than an annotation on a failing query. The snippet offers it on
+every query kind.
+
+### Fixed
+
+- The PASS and FAIL boxes drawn around queries after an analysis were placed
+  by byte offset, so any non-ASCII text earlier in the model (an accented
+  name, a `→` arrow, an emoji in a comment) shifted them. They are now
+  converted to editor positions first.
+- Saving a model no longer clears its analysis result. The change event VS
+  Code fires for the dirty flag was mistaken for an edit.
+- Running an analysis while one is already running no longer hides the
+  spinner: the cancelled run's report is told apart from the new run's by the
+  token the server now includes.
+- The spinner no longer sticks when the language server is not running; the
+  failure is reported instead. A declined analysis says why.
+- The `verifpal.validateOnType`, `verifpal.diagnostics.passing`,
+  `verifpal.inlayHints.argumentNames` and `verifpal.codeLens` settings now
+  do what they say, with a Verifpal that reads them.
+- The "Run attacker analysis" code lens goes through the same path as the
+  command, so it shows the spinner, writes to the output and respects
+  `verifpal.sessions`.
+- Switching editors during an analysis and back no longer loses the spinner.
+- A `verifpal.path` starting with `~` is expanded. A configured path that
+  does not exist is reported, rather than silently replaced by whatever
+  `verifpal` is on the PATH, and the startup error names the binary that was
+  actually tried.
+- A restart while the server was still starting no longer leaves the old
+  process running, and deactivation waits for the server to shut down.
+- `verifpal.sessions` is rounded and kept within its declared range before
+  it is sent.
+- The `aead` and `sign` snippet descriptions promised a decryption or a
+  verification their bodies did not contain.
+
 ## 2.1.0
 
 Add support for scenarios, an upcoming Verifpal feature.

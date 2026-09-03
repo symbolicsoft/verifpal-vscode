@@ -7,6 +7,7 @@ import { ExecuteCommandRequest } from "vscode-languageclient";
 import {
 	ANALYSIS_REPORT,
 	describeAssumption,
+	indexOfByteOffset,
 	type Accepted,
 	type AnalysisReport,
 	type QueryReport
@@ -20,7 +21,8 @@ export default class AnalysisProvider implements vscode.Disposable {
 	private readonly status: vscode.StatusBarItem;
 	private readonly reports = new Map<string, AnalysisReport>();
 	private readonly subscriptions: vscode.Disposable[] = [];
-	private running = new Set<string>();
+	/** The token of the run in flight for each document, so a superseded run's report is told apart. */
+	private readonly running = new Map<string, string>();
 
 	constructor(private readonly client: LanguageClient) {
 		this.passedDecoration = vscode.window.createTextEditorDecorationType({
@@ -48,7 +50,9 @@ export default class AnalysisProvider implements vscode.Disposable {
 				this.onReport(report)
 			),
 			vscode.workspace.onDidChangeTextDocument((event) => {
-				if (isVerifpalDocument(event.document)) {
+				// The event also fires when only the dirty flag changes, as it
+				// does on save; a result is stale only when the text is.
+				if (event.contentChanges.length > 0 && isVerifpalDocument(event.document)) {
 					this.forget(event.document.uri.toString());
 				}
 			}),
@@ -67,32 +71,54 @@ export default class AnalysisProvider implements vscode.Disposable {
 			return;
 		}
 		const uri = document.uri.toString();
-		this.running.add(uri);
 		this.status.text = "$(sync~spin) Verifpal";
 		this.status.tooltip = "Verifpal analysis running";
 		this.status.show();
 		this.output.appendLine(`Analyzing ${document.fileName}…`);
 
 		const sessions = configGetSessions();
-		const accepted = (await this.client.sendRequest(ExecuteCommandRequest.type, {
-			command: "verifpal.analyze",
-			arguments: [{ uri, sessions }]
-		})) as Accepted | null;
+		let accepted: Accepted | null;
+		try {
+			accepted = (await this.client.sendRequest(ExecuteCommandRequest.type, {
+				command: "verifpal.analyze",
+				arguments: [{ uri, sessions }]
+			})) as Accepted | null;
+		} catch (error) {
+			this.settle(uri);
+			this.output.appendLine(`The language server did not take the request: ${String(error)}`);
+			vscode.window.showErrorMessage(
+				"Verifpal: the language server is not running. See the Verifpal Language Server output for why."
+			);
+			return;
+		}
 		if (!accepted?.accepted) {
-			this.running.delete(uri);
-			this.status.hide();
-			this.output.appendLine("The server declined to analyze this document.");
+			this.settle(uri);
+			const reason = accepted?.reason ? `: ${accepted.reason}` : ".";
+			this.output.appendLine(`The server declined to analyze this document${reason}`);
+			return;
+		}
+		this.running.set(uri, accepted.token);
+	}
+
+	/** Verifies the open document with this URI, as the code lens above the queries asks to. */
+	async verifyUri(uri: string): Promise<void> {
+		const document = vscode.workspace.textDocuments.find((d) => d.uri.toString() === uri);
+		if (document) {
+			await this.verify(document);
 		}
 	}
 
 	async cancel(document: vscode.TextDocument): Promise<void> {
 		const uri = document.uri.toString();
-		await this.client.sendRequest(ExecuteCommandRequest.type, {
-			command: "verifpal.cancelAnalysis",
-			arguments: [{ uri }]
-		});
-		this.running.delete(uri);
-		this.status.hide();
+		try {
+			await this.client.sendRequest(ExecuteCommandRequest.type, {
+				command: "verifpal.cancelAnalysis",
+				arguments: [{ uri }]
+			});
+		} catch (error) {
+			this.output.appendLine(`The language server did not take the request: ${String(error)}`);
+		}
+		this.settle(uri);
 	}
 
 	showOutput(): void {
@@ -106,6 +132,15 @@ export default class AnalysisProvider implements vscode.Disposable {
 		this.render();
 	}
 
+	/** No run is in flight for `uri` any more; the status bar follows. */
+	private settle(uri: string): void {
+		this.running.delete(uri);
+		this.render();
+		if (!this.reports.has(uri)) {
+			this.status.hide();
+		}
+	}
+
 	private forget(uri: string): void {
 		if (this.reports.delete(uri)) {
 			this.render();
@@ -113,6 +148,12 @@ export default class AnalysisProvider implements vscode.Disposable {
 	}
 
 	private onReport(report: AnalysisReport): void {
+		const current = this.running.get(report.uri);
+		if (report.token !== undefined && current !== undefined && current !== report.token) {
+			// A run this one replaced is reporting, usually that it was
+			// cancelled. The replacement is still going.
+			return;
+		}
 		this.running.delete(report.uri);
 		if (!report.ok) {
 			this.status.hide();
@@ -168,11 +209,16 @@ export default class AnalysisProvider implements vscode.Disposable {
 			this.status.hide();
 			return;
 		}
-		const report = this.reports.get(editor.document.uri.toString());
+		const uri = editor.document.uri.toString();
+		const report = this.reports.get(uri);
 		if (!report) {
 			editor.setDecorations(this.passedDecoration, []);
 			editor.setDecorations(this.failedDecoration, []);
-			if (!this.running.has(editor.document.uri.toString())) {
+			if (this.running.has(uri)) {
+				this.status.text = "$(sync~spin) Verifpal";
+				this.status.tooltip = "Verifpal analysis running";
+				this.status.show();
+			} else {
 				this.status.hide();
 			}
 			return;
@@ -202,8 +248,15 @@ function ranges(
 	queries: QueryReport[],
 	resolved: boolean
 ): vscode.Range[] {
+	const text = document.getText();
 	return queries
 		.filter((q) => q.resolved === resolved)
-		.map((q) => new vscode.Range(document.positionAt(q.range.start), document.positionAt(q.range.end)))
+		.map(
+			(q) =>
+				new vscode.Range(
+					document.positionAt(indexOfByteOffset(text, q.range.start)),
+					document.positionAt(indexOfByteOffset(text, q.range.end))
+				)
+		)
 		.map((range) => document.validateRange(range));
 }

@@ -61,7 +61,12 @@ make lint           # eslint + tsc --noEmit
 make check          # what CI runs
 ```
 
-The extension no longer has unit tests, because it no longer has anything to unit test. It used to carry a scanner for the Verifpal language and a copy of the engine's primitive table, and the tests existed to catch those drifting — the extension once documented `malleable` as unimplemented long after `ENC[malleable]` started working, and nothing caught it. Both are now gone: the language lives in the engine, and the extension asks. What is left is glue, and it is exercised by the language server's own test suite in the Verifpal repository.
+```sh
+make test             # unit tests: grammar, snippets, manifest, protocol
+make test-integration # the extension host tests, in a downloaded VS Code
+```
+
+The language itself is not tested here. The extension used to carry a scanner for Verifpal and a copy of the engine's primitive table, and the tests existed to catch those drifting — the extension once documented `malleable` as unimplemented long after `ENC[malleable]` started working, and nothing caught it. Both are now gone: the language lives in the engine, and the extension asks. What remains under test is what the extension still owns: that the TextMate grammar and the snippets agree with the engine's primitives, that the manifest is consistent, and that the client side of the analysis protocol converts what the server sends correctly.
 
 ## License
 Verifpal and Verifpal for Visual Studio Code are published by Symbolic Software. They are provided as free and open source software, licensed under the [GNU General Public License, version 3](https://www.gnu.org/licenses/gpl-3.0.en.html). The Verifpal User Manual is provided under the [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)](https://creativecommons.org/licenses/by-nc-nd/4.0/) license.

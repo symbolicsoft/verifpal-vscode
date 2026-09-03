@@ -15,17 +15,25 @@ import {
 	configDeterminePath,
 	configGetAnalyzeOnSave,
 	configGetEnabled,
+	configPathProblem,
 	isVerifpalDocument
 } from "./config";
+
+/** The command the server puts on its code lens; it is routed through {@link AnalysisProvider}. */
+const ANALYZE_COMMAND = "verifpal.analyze";
 
 class Session implements vscode.Disposable {
 	readonly client: LanguageClient;
 	readonly analysis: AnalysisProvider;
 	readonly diagram: DiagramProvider;
 	private readonly registrations: vscode.Disposable[] = [];
-	private started = false;
+	private starting: Promise<void> | undefined;
 
 	constructor(extensionUri: vscode.Uri) {
+		const problem = configPathProblem();
+		if (problem) {
+			void vscode.window.showWarningMessage(problem);
+		}
 		const command = configDeterminePath();
 		const server: ServerOptions = {
 			command,
@@ -36,7 +44,19 @@ class Session implements vscode.Disposable {
 			synchronize: {
 				configurationSection: "verifpal"
 			},
-			outputChannelName: "Verifpal Language Server"
+			outputChannelName: "Verifpal Language Server",
+			middleware: {
+				// The code lens above the queries block asks the server to
+				// analyze directly. Going through the provider instead gives
+				// it the spinner, the output and the configured session count.
+				executeCommand: (command, args, next) => {
+					const uri = (args[0] as { uri?: string } | undefined)?.uri;
+					if (command === ANALYZE_COMMAND && typeof uri === "string") {
+						return this.analysis.verifyUri(uri);
+					}
+					return next(command, args);
+				}
+			}
 		};
 		this.client = new LanguageClient("verifpal", "Verifpal", server, options);
 		this.analysis = new AnalysisProvider(this.client);
@@ -52,21 +72,24 @@ class Session implements vscode.Disposable {
 		);
 	}
 
-	async start(): Promise<void> {
-		try {
-			await this.client.start();
-			this.started = true;
-		} catch (error) {
+	start(): Promise<void> {
+		this.starting = this.client.start().catch((error: unknown) => {
 			reportMissingBinary(String(error));
-		}
+		});
+		return this.starting;
 	}
 
-	dispose(): void {
+	/**
+	 * Stops the server. A start still in progress is waited for first, or the
+	 * process it spawns would outlive the session that owned it.
+	 */
+	async dispose(): Promise<void> {
 		for (const registration of this.registrations) {
 			registration.dispose();
 		}
-		if (this.started) {
-			void this.client.stop();
+		await this.starting;
+		if (this.client.isRunning()) {
+			await this.client.stop();
 		}
 	}
 }
@@ -80,7 +103,7 @@ export function activate(context: vscode.ExtensionContext): void {
 			session = new Session(context.extensionUri);
 			void session.start();
 		} else if (!enabled && session) {
-			session.dispose();
+			void session.dispose();
 			session = undefined;
 		}
 	};
@@ -108,7 +131,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
 	const restart = (): void => {
 		if (session) {
-			session.dispose();
+			void session.dispose();
 			session = undefined;
 		}
 		resetBinaryWarning();
@@ -145,11 +168,13 @@ export function activate(context: vscode.ExtensionContext): void {
 				restart();
 			}
 		}),
-		{ dispose: () => session?.dispose() }
+		{ dispose: () => void session?.dispose() }
 	);
 }
 
-export function deactivate(): void {
-	session?.dispose();
+/** Returns the shutdown so the editor waits for the server to exit cleanly. */
+export function deactivate(): Promise<void> | undefined {
+	const closing = session?.dispose();
 	session = undefined;
+	return closing;
 }
