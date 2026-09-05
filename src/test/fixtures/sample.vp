@@ -21,7 +21,7 @@ principal Alice[
 	k = DH_KEX(gb, a)
 	generates n
 	e = AEAD_ENC(k, n, m, nil)
-	s = SIGN[malleable](a, e)
+	s = SIGN[forgeable](a, e)
 ]
 
 Alice -> Bob: n, e, s
