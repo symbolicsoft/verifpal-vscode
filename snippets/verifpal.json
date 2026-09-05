@@ -110,13 +110,13 @@
 	},
 	"Authenticated encryption": {
 		"prefix": "aead",
-		"description": "Encrypt with associated data. See 'aeaddec' for the checked decryption.",
-		"body": ["${1:e} = AEAD_ENC(${2:k}, ${3:m}, ${4:nil})"]
+		"description": "Encrypt with associated data, under a nonce that must be fresh for this key. See 'aeaddec' for the checked decryption.",
+		"body": ["generates ${2:n}", "${1:e} = AEAD_ENC(${3:k}, ${2:n}, ${4:m}, ${5:nil})"]
 	},
 	"Checked authenticated decryption": {
 		"prefix": "aeaddec",
-		"description": "Decrypt, halting this principal if authentication fails.",
-		"body": ["${1:d} = AEAD_DEC(${2:k}, ${3:e}, ${4:nil})?"]
+		"description": "Decrypt, halting this principal if authentication fails. Needs the same nonce the sender used.",
+		"body": ["${1:d} = AEAD_DEC(${2:k}, ${3:n}, ${4:e}, ${5:nil})?"]
 	},
 	"Signature": {
 		"prefix": "sign",

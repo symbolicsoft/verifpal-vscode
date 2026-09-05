@@ -5,6 +5,11 @@
 
 # Change Log
 
+## 2.2.1
+
+Migrate to the new API for `AEAD_ENC` and `AEAD_DEC`, which takes a nonce,
+allowing us to model nonce reuse.
+
 ## 2.2.0
 
 Remove the `PW_HASH` primitive and the `knows password` declaration, which
